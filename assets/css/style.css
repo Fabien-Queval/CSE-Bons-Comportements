@@ -1,0 +1,86 @@
+/* <=========================== SOMMAIRE ===========================>
+   0. BASE     — page, police, fond
+   1. FICHE    — conteneur d'un comportement
+   2. ONGLETS  — navigation entre les trois faces
+   3. FACE     — le geste / les conséquences / le bon réflexe
+   <===============================================================> */
+
+
+/* <============================= BASE ==============================> */
+
+body {
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--police);
+  font-size: var(--texte-base);
+}
+
+
+/* <============================= FICHE =============================> */
+
+/* La carte. Laisse commune à tout le contenu : 60rem donne environ
+   75 caractères par ligne, l'empan de lecture le plus confortable. */
+.fiche {
+  max-width: var(--largeur-contenu);
+  margin-inline: auto;
+  margin-block: var(--espace-8);
+  padding: var(--espace-8);
+
+  background: var(--surface);
+  border-radius: var(--rayon);
+  box-shadow: var(--ombre-carte);
+}
+
+.fiche__entete {
+  margin-bottom: var(--espace-8);
+}
+
+/* Capitales espacées : serrées, elles deviennent illisibles. */
+.fiche__categorie {
+  margin-bottom: var(--espace-2);
+  color: var(--texte-discret);
+  font-size: var(--texte-sm);
+  font-weight: var(--gras-fort);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Interlignage resserré : le 1.5 du reset vise le texte courant.
+   Plus un texte est gros, plus ses lignes doivent se rapprocher. */
+.fiche__titre {
+  font-size: var(--texte-2xl);
+  font-weight: var(--gras-titre);
+  line-height: 1.15;
+}
+
+/* Le filet teal, sur le modèle des soulignements de section chez U.
+   Purement décoratif, donc en ::after plutôt qu'en balise HTML. */
+.fiche__entete::after {
+  content: "";
+  display: block;
+  width: 4rem;
+  height: 4px;
+  margin-top: var(--espace-4);
+  background: var(--entete-filet);
+  border-radius: 2px;
+}
+
+
+/* <============================ ONGLETS ============================> */
+
+/* À écrire ensemble : l'onglet actif prendra la couleur de sa face
+   (jaune / rouge / teal), la couleur servant de repère de navigation. */
+
+
+/* <============================= FACE ==============================> */
+
+/* Cadre imposé : les images n'ont pas toutes exactement le même ratio.
+   `cover` les cale au lieu de les déformer, ce qui garde une hauteur
+   identique d'une face à l'autre et d'une fiche à l'autre.
+   Le 4/3 est calé sur le format natif des photos. */
+.face__image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--rayon);
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comportements — CSE</title>
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <main>
+        <article class="fiche">
+            <header class="fiche__entete">
+                <p class="fiche__categorie">Manutention</p>
+                <h1 class="fiche__titre">J'ai percuté un rack</h1>
+            </header>
+
+            <nav class="fiche__onglets" aria-label="Sections de la fiche">
+                <button type="button" class="onglet onglet--actif" data-cible="face-mauvais">Le geste</button>
+                <button type="button" class="onglet" data-cible="face-consequences">Ce que ça coûte</button>
+                <button type="button" class="onglet" data-cible="face-bon">Le bon réflexe</button>
+            </nav>
+
+            <!-- les trois faces ici -->
+
+            <section class="face face--mauvais" id="face-mauvais">
+                <h2 class="face__titre">Le geste</h2>
+                <img    class="face__image"
+                        src="assets/img/comportements/rack-percute.jpg" 
+                        alt="Un gerbeur a heurté le montant d'un rack de réserve, le montant est tordu">
+                <p class="face__texte">Les accidents en réserve arrivent. Parfois, l'appareil est un peu brusque, et sa puissance et son poids suffisent à endommager le montant des racks.</p>
+                <p class="face__texte">Parfois on manœuvre sans marge, ou trop près des lisses. Parfois on touche juste un montant, même pas réellement fort.</p>                  
+            </section>
+
+            <section class="face face--consequences" id="face-consequences">
+                <h2 class="face__titre">Les conséquences</h2>
+                <img    class="face__image"
+                        src="assets/img/comportements/rack-consequences.jpg" 
+                        alt="Un rack fragilisé finit par s'effondrer, mettant en danger le cariste">
+                <p class="face__texte">Un montant plié ne porte plus ce qu'il portait avant. La structure tient, jusqu'au jour où elle ne tient plus — avec des palettes au-dessus de la tête de quelqu'un.</p>
+                <p class="face__texte">Un rack touché doit être contrôlé, et tout défaut signalé à un responsable sans attendre.</p>
+                <p class="face__texte">En cas de défaut, on le soulage : on retire les palettes qu'il supporte.</p>                 
+            </section>
+
+            <section class="face face--bon" id="face-bon">
+                <h2 class="face__titre">Le bon réflexe</h2>
+                <img    class="face__image"
+                        src="assets/img/comportements/rack-bon.jpg" 
+                        alt="Un employé signale à son responsable qu'il a heurté un montant de rack">
+                <p class="face__texte">Il est important de ralentir dans les allées étroites et de prendre de la marge. Pour cela, avoir des allées dégagées est indispensable !</p>
+                <p class="face__texte">Il est important de prévenir un responsable rapidement, afin que des mesures soient prises.</p>
+                <p class="face__texte">Mieux vaut signaler immédiatement un choc que découvrir ses conséquences plus tard.</p>  
+                
+                <ul class="face__consignes">
+                    <li>Ralentir dans les allées étroites, pour garder le contrôle</li>
+                    <li>Prendre de la marge évite les contacts</li>
+                    <li>Tenir les allées dégagées, pour des manœuvres plus sûres</li>
+                </ul>
+            </section>
+
+        </article>
+    </main>
+  
+
+</body>
+</html>

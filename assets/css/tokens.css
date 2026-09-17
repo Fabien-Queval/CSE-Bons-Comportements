@@ -1,0 +1,141 @@
+/* <=========================== TOKENS ===========================>
+   Vocabulaire visuel du projet. Deux étages :
+     1. PRIMITIFS   — la palette brute, sans signification métier
+     2. SÉMANTIQUES — le rôle que joue chaque valeur dans l'app
+   style.css ne consomme QUE l'étage sémantique : aucune couleur,
+   aucun espacement ne doit y être écrit en dur.
+
+   Couleurs relevées sur coursesu.com. Le bandeau indigo à étoiles
+   est une campagne événementielle, il ne fait pas partie de la charte.
+   <=============================================================> */
+
+
+/* <============================ POLICE ============================>
+   Mulish, la police de Courses U. Sous licence SIL Open Font,
+   donc embarquable sur la clé USB (voir assets/fonts/LICENSE.txt).
+
+   ATTENTION : dans un fichier CSS, une url() est relative AU CSS,
+   pas à index.html. D'où le ../fonts/ et non assets/fonts/.
+   <===============================================================> */
+
+@font-face {
+  font-family: "Mulish";
+  src: url("../fonts/mulish-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("../fonts/mulish-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("../fonts/mulish-latin-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("../fonts/mulish-latin-800-normal.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+:root {
+
+  /* <---- 1. PRIMITIFS — charte Courses U ----> */
+
+  --u-teal:     #007D8E;   /* couleur structurelle de la marque */
+  --u-teal-800: #005561;
+  --u-rouge:    #E32319;   /* le U du logo */
+  --u-orange:   #EB5E2C;
+  --u-jaune:    #FDC433;   /* soulignements de section */
+
+  --gris-50:  #FFFFFF;
+  --gris-100: #F5F4F2;     /* fond de page officiel U */
+  --gris-300: #DEDCD8;
+  --gris-600: #696867;
+  --gris-900: #1A1A1A;
+
+
+  /* <---- 2. SÉMANTIQUES ----> */
+
+  /* Surfaces et texte */
+  --fond:          var(--gris-100);
+  --surface:       var(--gris-50);
+  --bordure:       var(--gris-300);
+  --texte:         var(--gris-900);
+  --texte-discret: var(--gris-600);
+
+  /* En-tête de fiche : surface blanche + filet teal,
+     sur le modèle des soulignements de section de coursesu.com */
+  --entete-fond:  var(--gris-50);
+  --entete-texte: var(--gris-900);
+  --entete-filet: var(--u-teal);
+
+  /* Une couleur par face — l'escalade narrative de la fiche.
+     Ce sont des ACCENTS : liseré, pastille, fond de badge.
+     JAMAIS la couleur d'un texte courant, leur contraste sur --fond
+     est insuffisant (teal 4.42, rouge 4.23, jaune 1.46 ; seuil AA 4.5).
+     Quand l'une sert de fond, poser dessus le --sur-* correspondant. */
+  --face-geste:        var(--u-jaune);
+  --face-consequences: var(--u-rouge);
+  --face-bon:          var(--u-teal);
+
+  --sur-geste:        var(--gris-900);   /* jaune => texte foncé */
+  --sur-consequences: var(--gris-50);
+  --sur-bon:          var(--gris-50);
+
+
+  /* <---- 3. ESPACEMENTS ----> */
+  /* Échelle : on ne choisit jamais une valeur au hasard,
+     on prend le barreau au-dessus ou en dessous. */
+
+  --espace-1:  0.25rem;   /*  4px */
+  --espace-2:  0.5rem;    /*  8px */
+  --espace-3:  0.75rem;   /* 12px */
+  --espace-4:  1rem;      /* 16px */
+  --espace-6:  1.5rem;    /* 24px */
+  --espace-8:  2rem;      /* 32px */
+  --espace-12: 3rem;      /* 48px */
+
+
+  /* <---- 4. TYPOGRAPHIE ----> */
+
+  --police: "Mulish", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --texte-sm:   0.875rem;
+  --texte-base: 1rem;
+  --texte-lg:   1.25rem;
+  --texte-xl:   1.75rem;
+  --texte-2xl:  2.5rem;
+
+  --gras-normal: 400;
+  --gras-demi:   600;
+  --gras-fort:   700;
+  --gras-titre:  800;
+
+
+  /* <---- 5. FORMES ET MOUVEMENT ----> */
+
+  --rayon:    0.75rem;
+  --rayon-sm: 0.375rem;
+
+  --largeur-contenu: 60rem;
+
+  --transition: 200ms ease;
+
+    --ombre-carte:
+    0 1px 2px rgb(0 0 0 / 0.04),
+    0 8px 24px rgb(0 0 0 / 0.06);
+}

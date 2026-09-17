@@ -1,0 +1,39 @@
+/* ---- Reset ----
+   Neutralise les défauts du navigateur.
+   Aucune décision esthétique ici : ni couleur, ni police, ni taille.
+   Si tu as envie d'en mettre, c'est que ça va dans style.css. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+img,
+picture,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
