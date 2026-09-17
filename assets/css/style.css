@@ -1,86 +1,293 @@
 /* <=========================== SOMMAIRE ===========================>
-   0. BASE     — page, police, fond
-   1. FICHE    — conteneur d'un comportement
-   2. ONGLETS  — navigation entre les trois faces
-   3. FACE     — le geste / les conséquences / le bon réflexe
+   0. BASE      — la page, la scène
+   1. EN-TÊTE   — progression et fil d'ariane, communs aux trois faces
+   2. FACE      — un écran complet : image, titre, idées
+   3. IMAGE     — la bande panoramique et son fondu
+   4. IDÉES     — les colonnes du bas
+   5. PETITS ÉCRANS
    <===============================================================> */
 
 
 /* <============================= BASE ==============================> */
 
+/* La scène occupe exactement l'écran et ne défile pas : c'est un
+   diaporama, pas une page. D'où le overflow:hidden, qui serait une
+   faute sur un site ordinaire. */
 body {
-  background: var(--fond);
-  color: var(--texte);
+  height: 100vh;
+  overflow: hidden;
+  background: var(--scene-fond);
+  color: var(--scene-texte);
   font-family: var(--police);
-  font-size: var(--texte-base);
+  transition: background 600ms ease, color 300ms ease;
+}
+
+.scene {
+  position: relative;
+  height: 100vh;
 }
 
 
-/* <============================= FICHE =============================> */
+/* <============================ EN-TÊTE ============================> */
 
-/* La carte. Laisse commune à tout le contenu : 60rem donne environ
-   75 caractères par ligne, l'empan de lecture le plus confortable. */
-.fiche {
-  max-width: var(--largeur-contenu);
+/* Posé au-dessus des faces, qui occupent toute la scène.
+   pointer-events:none pour que le clic traverse et atteigne la scène —
+   c'est elle qui fera avancer le parcours au fil suivant. */
+.entete {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  left: 0;
+  max-width: var(--largeur-scene, 88rem);
   margin-inline: auto;
-  margin-block: var(--espace-8);
-  padding: var(--espace-8);
-
-  background: var(--surface);
-  border-radius: var(--rayon);
-  box-shadow: var(--ombre-carte);
+  padding: var(--espace-6) var(--espace-8) 0;
+  pointer-events: none;
 }
 
-.fiche__entete {
-  margin-bottom: var(--espace-8);
+.progression {
+  display: flex;
+  gap: 4px;
+  margin-bottom: var(--espace-6);
 }
 
-/* Capitales espacées : serrées, elles deviennent illisibles. */
-.fiche__categorie {
-  margin-bottom: var(--espace-2);
-  color: var(--texte-discret);
+.progression__segment {
+  flex: 1;
+  height: 4px;
+  background: var(--scene-trait);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* Le remplissage est toujours présent, simplement écrasé à zéro.
+   On anime une transformation, jamais une largeur : la transformation
+   est traitée en fin de chaîne, sans recalculer la mise en page. */
+.progression__segment::after {
+  content: "";
+  display: block;
+  height: 100%;
+  background: var(--segment);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 500ms ease;
+}
+
+.progression__segment--geste        { --segment: var(--u-jaune); }
+.progression__segment--consequences { --segment: var(--u-rouge); }
+.progression__segment--bon          { --segment: var(--u-teal);  }
+
+.progression__segment.franchi::after { transform: scaleX(1); }
+
+.entete__fil {
+  color: var(--scene-doux);
+  font-size: var(--texte-sm);
+  font-weight: var(--gras-demi);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+
+/* <============================== FACE ==============================> */
+
+/* Les trois faces sont superposées : chacune remplit la scène et une
+   seule est visible. Sans cette règle, display:flex l'emporterait sur
+   l'attribut hidden et les trois s'afficheraient en même temps. */
+.face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  max-width: var(--largeur-scene, 88rem);
+  margin-inline: auto;
+  padding: var(--espace-6) var(--espace-8) var(--espace-8);
+}
+
+.face[hidden] { display: none; }
+
+/* L'ordre d'affichage ne suit pas l'ordre du HTML : l'image est écrite
+   en premier dans le document (elle appartient à la face), mais elle
+   s'affiche entre le titre et les colonnes. order le permet sans
+   toucher au HTML. */
+
+.face__propos {
+  order: 1;
+  margin-top: calc(var(--espace-8) + var(--espace-6));
+  pointer-events: none;
+}
+
+.face__etiquette {
+  display: inline-block;
+  margin-bottom: var(--espace-3);
+  padding: var(--espace-1) var(--espace-3);
+  border-radius: 999px;
+  background: var(--face);
+  color: var(--sur-face);
   font-size: var(--texte-sm);
   font-weight: var(--gras-fort);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
 }
 
-/* Interlignage resserré : le 1.5 du reset vise le texte courant.
-   Plus un texte est gros, plus ses lignes doivent se rapprocher. */
-.fiche__titre {
-  font-size: var(--texte-2xl);
+/* clamp() donne un plancher, une taille qui suit la largeur d'écran,
+   et un plafond. Le titre reste lisible sur un petit moniteur de
+   réserve sans devenir démesuré sur un grand.
+   text-wrap:balance égalise la longueur des lignes. */
+.face__phrase {
+  max-width: 22ch;
+  font-size: clamp(1.9rem, 4.2vw, 3.4rem);
   font-weight: var(--gras-titre);
-  line-height: 1.15;
-}
-
-/* Le filet teal, sur le modèle des soulignements de section chez U.
-   Purement décoratif, donc en ::after plutôt qu'en balise HTML. */
-.fiche__entete::after {
-  content: "";
-  display: block;
-  width: 4rem;
-  height: 4px;
-  margin-top: var(--espace-4);
-  background: var(--entete-filet);
-  border-radius: 2px;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 
-/* <============================ ONGLETS ============================> */
+/* <============================= IMAGE ==============================> */
 
-/* À écrire ensemble : l'onglet actif prendra la couleur de sa face
-   (jaune / rouge / teal), la couleur servant de repère de navigation. */
+/* flex:1 => la bande prend tout l'espace laissé libre entre le titre
+   et les colonnes. Elle ne peut donc plus les chevaucher, et il ne
+   peut plus rester de vide entre eux.
+   min-height:0 est indispensable : sans lui, un enfant flex refuse de
+   descendre sous la taille de son contenu. */
+.face__cadre {
+  order: 2;
+  flex: 1;
+  min-height: var(--cadre-mini);
+  position: relative;
+  margin-block: var(--espace-6);
+  overflow: hidden;
+}
 
-
-/* <============================= FACE ==============================> */
-
-/* Cadre imposé : les images n'ont pas toutes exactement le même ratio.
-   `cover` les cale au lieu de les déformer, ce qui garde une hauteur
-   identique d'une face à l'autre et d'une fiche à l'autre.
-   Le 4/3 est calé sur le format natif des photos. */
 .face__image {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: 100%;
   object-fit: cover;
-  border-radius: var(--rayon);
+  object-position: center var(--photo-cadrage);
+  transform: scale(var(--zoom-depart));
+  animation: poser var(--zoom-duree) linear forwards;
+}
+
+/* Sans JavaScript, le dézoom se joue à l'ouverture de la page.
+   Une animation, et non une transition : une transition a besoin d'un
+   changement d'état pour démarrer, une animation part toute seule. */
+@keyframes poser {
+  to { transform: none; }
+}
+
+/* Le fondu : des dégradés de la couleur du fond, et non un masque.
+   Il se recolore donc tout seul quand on bascule de thème. */
+.face__cadre::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom,
+      var(--scene-fond) 0%, transparent var(--cadre-fondu),
+      transparent calc(100% - var(--cadre-fondu)), var(--scene-fond) 100%),
+    linear-gradient(to right,
+      var(--scene-fond) 0%, transparent var(--cadre-fondu),
+      transparent calc(100% - var(--cadre-fondu)), var(--scene-fond) 100%);
+}
+
+
+/* <============================= IDÉES ==============================> */
+
+/* Hauteur FIXE, et c'est indispensable : une idée non révélée mesurera
+   zéro pixel de large, donc son texte se coupera lettre par lettre et
+   l'élément deviendra très haut. Sans hauteur imposée, il mangerait
+   tout l'espace et margin-top:auto n'aurait plus rien à distribuer. */
+.idees {
+  order: 3;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  height: var(--bande-basse);
+  padding-top: var(--espace-4);
+  border-top: 1px solid var(--scene-trait);
+  overflow: hidden;
+}
+
+/* flex-grow est un nombre, donc il s'anime — c'est ce qui fera que les
+   idées déjà là se resserrent pour accueillir la suivante. */
+.idee {
+  flex: 0 1 0;
+  min-width: 0;
+  padding: 0;
+  opacity: 0;
+  transform: translateX(18px);
+  overflow: hidden;
+  transition:
+    flex-grow 600ms cubic-bezier(0.2, 0.7, 0.3, 1),
+    opacity   450ms ease,
+    transform 550ms cubic-bezier(0.2, 0.7, 0.3, 1),
+    padding   600ms ease;
+}
+
+.idee.vue {
+  flex-grow: 1;
+  padding-right: var(--espace-8);
+  opacity: 1;
+  transform: none;
+}
+
+.idee__rang {
+  display: block;
+  margin-bottom: var(--espace-2);
+  color: var(--face);
+  font-size: var(--texte-sm);
+  font-weight: var(--gras-titre);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* Seule l'idée isolée est bridée en largeur : un texte étalé sur
+   quatre-vingts centimètres ne se lit pas. En colonnes, la colonne
+   fait déjà la limite. */
+.idee__texte {
+  max-width: 44ch;
+  color: var(--scene-doux);
+  line-height: 1.5;
+}
+
+
+/* <========================= PETITS ÉCRANS =========================> */
+
+/* Sous 860px les colonnes n'ont plus de sens : on empile, et la page
+   redevient une page qui défile. */
+@media (max-width: 860px) {
+  body { height: auto; overflow: auto; }
+  .scene { height: auto; }
+
+  .face {
+    position: static;
+    padding-top: calc(var(--espace-12) * 2);
+  }
+
+  .face__cadre {
+    position: relative;
+    inset: auto;
+    height: auto;
+    width: 100%;
+    max-width: 100%;
+    margin: var(--espace-6) 0;
+  }
+
+  .idees { flex-direction: column; height: auto; margin-top: var(--espace-6); }
+  .idee.vue { padding-right: 0; padding-bottom: var(--espace-6); }
+}
+
+
+/* <===================== RÉGLAGE D'ACCESSIBILITÉ ====================> */
+
+/* Certaines personnes règlent leur système pour réduire les animations —
+   troubles vestibulaires, migraines. On le respecte sans rien casser. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
+  .face__image { transform: none; }
 }

@@ -135,7 +135,58 @@
 
   --transition: 200ms ease;
 
-    --ombre-carte:
+  --ombre-carte:
     0 1px 2px rgb(0 0 0 / 0.04),
     0 8px 24px rgb(0 0 0 / 0.06);
+
+  --focus: var(--u-teal);
+
+
+  /* <---- 6. LA SCÈNE ----> */
+  /* Les réglages de l'écran d'une face. Ce sont les sept valeurs
+     qu'on a ajustées à l'œil sur la maquette : elles se modifient ici
+     et nulle part ailleurs. */
+
+  --cadre-mini: 14rem;       /* hauteur plancher de la bande image */
+  --cadre-fondu:   7%;       /* épaisseur du dégradé sur chaque bord */
+  --photo-cadrage: 50%;      /* 30% remonte le cadrage, 70% le descend */
+  --zoom-depart:   1.25;     /* échelle de départ de l'image */
+  --zoom-duree:    6s;       /* durée du dézoom */
+  --bande-basse:   11rem;    /* hauteur réservée aux colonnes d'idées */
+}
+
+
+/* <====================== COULEUR DE LA FACE ======================>
+   La face affichée donne sa couleur à toute la scène. Une seule
+   variable change ; l'étiquette, les intertitres et la teinte du fond
+   la consomment. Le texte posé SUR cette couleur suit avec elle, parce
+   que le jaune demande du texte foncé là où le rouge et le teal
+   demandent du blanc.
+   <===============================================================> */
+
+body[data-face="geste"]        { --face: var(--u-jaune); --sur-face: var(--gris-900); }
+body[data-face="consequences"] { --face: var(--u-rouge); --sur-face: var(--gris-50);  }
+body[data-face="bon"]          { --face: var(--u-teal);  --sur-face: var(--gris-50);  }
+
+
+/* <=========================== LES THÈMES ===========================>
+   Deux ambiances, un seul jeu de noms. Aucune règle de style.css ne
+   sait laquelle est active : elle lit --scene-fond, --scene-texte, et
+   c'est tout. C'est ce qui rend la bascule gratuite.
+   <================================================================> */
+
+/* Thème clair — le défaut, celui de la charte U. */
+body {
+  --scene-fond:  color-mix(in srgb, var(--face, var(--u-teal)) 5%, var(--gris-100));
+  --scene-texte: var(--gris-900);
+  --scene-doux:  var(--gris-600);
+  --scene-trait: rgb(0 0 0 / 0.14);
+}
+
+/* Thème sombre — plus de caractère, on s'éloigne un peu de la charte. */
+body[data-theme="sombre"] {
+  --scene-fond:  color-mix(in srgb, var(--face, var(--u-teal)) 10%, #14100F);
+  --scene-texte: #F3F1EE;
+  --scene-doux:  rgb(243 241 238 / 0.68);
+  --scene-trait: rgb(255 255 255 / 0.18);
 }
