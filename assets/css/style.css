@@ -86,17 +86,52 @@ body {
   gap: var(--espace-6);
 }
 
-/* Emplacement du branding. Un logo image se glisse ici sans rien changer :
-   il suffit de lui donner une hauteur. */
+/* <---- Le branding, et son aura ---->
+   display:flex pour centrer l'image sur la ligne au lieu de la poser
+   sur la ligne de base du texte, qui lui laisserait du vide dessous.
+   Les proprietes de texte restent en bas de la regle : elles servent
+   de repli si l'image ne se charge pas, l'alt s'affiche alors a la
+   bonne taille.
+
+   L'aura reprend le principe de l'invite du premier ecran (voir 6.8) :
+   deux fonds, l'un arrete au padding-box, l'autre jusqu'au border-box.
+   La bordure etant transparente, c'est le degrade conique qu'on voit a
+   travers, et son angle tourne parce que --angle est declaree en
+   @property dans tokens.css, donc interpolable. Le keyframe `tourner`
+   est ecrit une seule fois, en 6.8, et sert aux deux.
+
+   Un ecart avec l'invite : la couleur est --u-teal EN DUR, pas --face.
+   Le logo appartient a l'enseigne, pas a la fiche ouverte.
+
+   Reglages : `padding` ecarte l'anneau du cercle, la duree change la
+   vitesse. L'animation est coupee par prefers-reduced-motion (6.11). */
+
 .marque {
   flex: none;
+  display: flex;
+  align-items: center;
+  place-content: center;
+  aspect-ratio: 1;
+  padding: 4px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background:
+    linear-gradient(var(--scene-fond), var(--scene-fond)) padding-box,
+    conic-gradient(from var(--angle),
+      transparent 0deg, var(--u-teal) 90deg, transparent 200deg) border-box;
+  animation: tourner 4s linear infinite;
+
+  /* repli si l'image ne charge pas */
   color: var(--scene-texte);
   font-size: var(--texte-base);
   font-weight: var(--gras-titre);
   letter-spacing: -0.01em;
 }
 
-.marque img { height: 1.6rem; width: auto; }
+.marque img {
+  height: 2rem;
+  width: auto;
+}
 
 .entete__fil {
   flex: 1;
@@ -595,7 +630,7 @@ html.sans-js .outils { display: none; }
    coupe en plus ce qui bouge en permanence ou sans clic. */
 
 @media (prefers-reduced-motion: reduce) {
-  .invite, .invite__pouls { animation: none; }
+  .invite, .invite__pouls, .marque { animation: none; }
   body::before { display: none; }
   .face__image { translate: none; }
   .idee { filter: none; }

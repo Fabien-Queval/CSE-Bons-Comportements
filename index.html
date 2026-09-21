@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Comportements — CSE</title>
 
+  <!-- Le .ico est le format que le navigateur retrouve le plus surement
+       en file://, et il embarque 16, 32, 48 et 64 px dans un seul fichier. -->
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+
   <link rel="stylesheet" href="assets/css/reset.css">
   <link rel="stylesheet" href="assets/css/tokens.css">
   <link rel="stylesheet" href="assets/css/style.css">
@@ -37,9 +42,9 @@
 
     <div class="entete__barre">
 
-      <!-- Emplacement du branding. Remplacer le texte par le logo :
-           <img src="assets/img/logo-super-u.svg" alt="Super U"> -->
-      <p class="marque">Super&nbsp;U</p>
+      <!-- Le logo porte le nom de l'enseigne : l'attribut alt le dit pour
+           qui ne voit pas l'image, et il n'y a pas de texte en double. -->
+      <p class="marque"><img src="assets/img/logo-u.webp" alt="Super U"></p>
 
       <p class="entete__fil"></p>
 
