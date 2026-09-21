@@ -158,7 +158,9 @@ La syntaxe des deux fichiers JavaScript, la structure des quatre fiches et l'exi
 
 Ces vérifications ne portent pas sur le rendu graphique. L'affichage réel et l'accès depuis le partage réseau restent à contrôler sur le poste cible.
 
-Limite connue : les intertitres (`rang`) tiennent sur une seule ligne. Au-delà d'environ 35 caractères, ils sont abrégés par des points de suspension — la lisibilité prime, mais mieux vaut les écrire courts.
+Sur les écrans de 860 px de large ou moins, l’en-tête et les commandes occupent des rangées distinctes. La page défile, les images ont un cadre 16:10 et les idées révélées s’empilent sans hauteur fixe. Les intertitres peuvent revenir à la ligne : leur contenu n’est pas raccourci. Cette adaptation reste à valider visuellement sur les appareils cibles.
+
+Sur les écrans plus larges, les intertitres restent sur une seule ligne ; les textes longs peuvent être tronqués selon la place disponible.
 
 ## Auteur
 

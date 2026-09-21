@@ -877,23 +877,113 @@ body.morph .face__image { animation-play-state: paused; }
   body { height: auto; overflow: auto; }
   .scene { height: auto; }
 
-  .face {
-    position: static;
-    padding-top: calc(var(--espace-12) * 2);
+  /* L'en-tête participe à la hauteur de la page : son texte peut revenir
+     à la ligne sans recouvrir la fiche. Les commandes ont leur rangée. */
+  .entete {
+    position: relative;
+    padding: var(--espace-4) var(--espace-4) 0;
   }
 
+  .progression { margin-bottom: var(--espace-4); }
+
+  .entete__barre {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "marque fil" "outils outils";
+    gap: var(--espace-3);
+  }
+
+  .marque { grid-area: marque; }
+  .entete__fil {
+    grid-area: fil;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .outils {
+    grid-area: outils;
+    min-width: 0;
+    margin-left: 0;
+    flex-wrap: wrap;
+  }
+
+  .bouton {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 44px;
+    padding: var(--espace-2) var(--espace-3);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  body[data-vue="accueil"] .entete__barre {
+    grid-template-areas: "marque outils";
+  }
+  body[data-vue="accueil"] .outils { justify-content: flex-end; }
+  body[data-vue="accueil"] .theme { flex: 0 1 auto; }
+
+  .face {
+    position: static;
+    padding: var(--espace-6) var(--espace-4);
+  }
+
+  .face__propos { margin-top: 0; min-width: 0; }
+  .face__phrase {
+    max-width: none;
+    font-size: clamp(1.6rem, 6vw, 2.3rem);
+    line-height: 1.12;
+  }
+
+  /* Un cadre dont la hauteur ne dépend ni de flex ni de celle de la
+     photographie. Le cadrage propre à chaque fiche reste appliqué. */
   .face__cadre {
     position: relative;
     inset: auto;
-    height: auto;
+    flex: none;
     width: 100%;
-    max-width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 16 / 10;
     margin: var(--espace-6) 0;
   }
+  .face__image { position: absolute; inset: 0; }
 
-  .accueil { position: static; padding-top: calc(var(--espace-12) * 2); }
-  .accueil__grille { overflow: visible; }
+  .accueil {
+    position: static;
+    padding: var(--espace-6) var(--espace-4);
+  }
+  .accueil__grille {
+    flex: none;
+    overflow: visible;
+    grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+  }
 
-  .idees { flex-direction: column; height: auto; margin-top: var(--espace-6); }
-  .idee.vue { padding-right: 0; padding-bottom: var(--espace-6); }
+  /* En colonne, le flex-basis:0 du bureau écrasait la HAUTEUR des idées.
+     Seules les idées révélées occupent de la place, sans hauteur limite. */
+  .idees {
+    display: block;
+    height: auto;
+    margin-top: var(--espace-4);
+    overflow: visible;
+  }
+  .idee { display: none; }
+  .idee.vue {
+    display: block;
+    padding-right: 0;
+    padding-bottom: var(--espace-6);
+    overflow: visible;
+  }
+  .idee__rang { white-space: normal; text-overflow: clip; }
+  .idee__texte { max-width: none; }
+
+  /* L'invite reste dans la page et ne masque pas les textes au défilement. */
+  .invite {
+    position: static;
+    width: fit-content;
+    max-width: calc(100% - var(--espace-8));
+    margin: 0 auto var(--espace-6);
+    translate: none;
+    text-align: center;
+  }
 }
