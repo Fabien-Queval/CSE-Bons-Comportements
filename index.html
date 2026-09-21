@@ -10,20 +10,22 @@
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
-<!-- Deux attributs pilotent toute la page :
-       data-theme  : "clair" ou "sombre" — le bouton de l'en-tête le change
-       data-face   : "geste", "consequences" ou "bon" — donne sa couleur
-                     à la scène.
-     Depuis l'arrivée d'app.js, c'est LUI qui écrit data-face et le hidden
-     des faces. Les valeurs ci-dessous ne servent plus qu'à l'affichage
-     initial, avant que le script ne prenne la main. -->
-<body data-theme="clair" data-face="geste">
+<!-- Trois attributs pilotent toute la page :
+       data-theme : "clair" ou "sombre" — le bouton Thème le change
+       data-vue   : "accueil" ou "fiche" — décide QUI s'affiche
+       data-face  : "geste", "consequences" ou "bon" — donne sa couleur
+                    à la scène.
+     La scène est VIDE au chargement : app.js la remplit à partir de
+     data.js. Le HTML ne décrit plus un écran, il décrit de quoi en
+     fabriquer un. -->
+<body data-theme="clair" data-vue="accueil" data-face="geste">
 
 <main class="scene">
 
-  <!-- ====================== EN-TÊTE DE FICHE ======================
-       Commun aux trois faces : il ne bouge pas quand on avance.
-       ============================================================= -->
+  <!-- ====================== BARRE DU HAUT ======================
+       Commune aux deux vues. Sur l'accueil, la progression et le fil
+       d'ariane sont masqués, ainsi que les boutons de fiche.
+       ========================================================== -->
   <header class="entete">
 
     <!-- Un segment par face. La classe "franchi" remplit le segment. -->
@@ -33,139 +35,107 @@
       <span class="progression__segment progression__segment--bon"></span>
     </div>
 
-    <p class="entete__fil">Manutention · J'ai percuté un rack</p>
+    <div class="entete__barre">
 
-    <!-- « ça fait classe de laisser le choix » : la bascule appartient à
-         l'utilisateur. L'en-tête laisse passer les clics, ce bouton les
-         reprend (voir .theme dans style.css). -->
-    <button type="button" class="theme" aria-pressed="false">Thème</button>
+      <!-- Emplacement du branding. Remplacer le texte par le logo :
+           <img src="assets/img/logo-super-u.svg" alt="Super U"> -->
+      <p class="marque">Super&nbsp;U</p>
+
+      <p class="entete__fil"></p>
+
+      <!-- L'en-tête laisse passer les clics pour que toute la scène
+           fasse avancer le parcours ; ces boutons les reprennent. -->
+      <div class="outils">
+        <button type="button" class="bouton bouton--fiche" data-action="accueil">Accueil</button>
+        <button type="button" class="bouton bouton--fiche" data-action="rejouer">Recommencer</button>
+        <button type="button" class="bouton theme" aria-pressed="false">Thème</button>
+      </div>
+
+    </div>
 
   </header>
 
 
-  <!-- ========================== FACE 1 ==========================
-       Chaque face contient TOUT ce qui lui appartient : son image,
-       son titre, ses idées. C'est ce qui permettra plus tard de la
-       fabriquer d'un bloc à partir de data.js.
-       =========================================================== -->
-  <article class="face" id="face-geste">
+  <!-- ========================= L'ACCUEIL =========================
+       La grille de cartes est remplie par app.js. Une carte est un
+       <button> : le clavier la traverse et l'active sans code en plus.
+       ============================================================ -->
+  <section class="accueil" id="accueil">
 
-    <figure class="face__cadre">
-      <img class="face__image"
-           src="assets/img/comportements/rack-percute.jpg"
-           alt="Un gerbeur a heurté le montant d'un rack de réserve, le montant est tordu">
-    </figure>
-
-    <div class="face__propos">
-      <span class="face__etiquette">Le geste</span>
-      <h1 class="face__phrase">Les accidents en réserve <b class="cle">arrivent</b>.</h1>
+    <div class="accueil__tete">
+      <h1 class="accueil__titre">Les bons <b class="cle">comportements</b></h1>
+      <p class="accueil__intro">
+        Des situations du quotidien, en trois temps :
+        le geste, ce que ça coûte, le bon réflexe.
+      </p>
     </div>
 
-    <!-- La classe "vue" est posée par app.js, une idée par clic. -->
-    <div class="idees">
+    <div class="accueil__grille"></div>
 
-      <article class="idee">
-        <span class="idee__rang">Ça arrive</span>
-        <p class="idee__texte">Parfois, l'appareil est un peu brusque, et sa puissance et son poids suffisent à endommager le montant des racks.</p>
-      </article>
-
-      <article class="idee">
-        <span class="idee__rang">Ça se joue à peu</span>
-        <p class="idee__texte">Parfois on manœuvre sans marge, ou trop près des lisses.</p>
-      </article>
-
-      <article class="idee">
-        <span class="idee__rang">Ça ne fait pas de bruit</span>
-        <p class="idee__texte">Parfois on touche juste un montant, même pas réellement fort.</p>
-      </article>
-
-    </div>
-
-  </article>
+  </section>
 
 
-  <!-- ========================== FACE 2 ========================== -->
-  <article class="face" id="face-consequences" hidden>
-
-    <figure class="face__cadre">
-      <img class="face__image"
-           src="assets/img/comportements/rack-consequences.jpg"
-           alt="Un rack fragilisé cède et déverse ses palettes">
-    </figure>
-
-    <div class="face__propos">
-      <span class="face__etiquette">Ce que ça coûte</span>
-      <h1 class="face__phrase">Un montant plié <b class="cle">ne porte plus</b> ce qu'il portait.</h1>
-    </div>
-
-    <div class="idees">
-
-      <article class="idee">
-        <span class="idee__rang">Ce qui est abîmé</span>
-        <p class="idee__texte">Un montant plié ne porte plus ce qu'il portait avant.</p>
-      </article>
-
-      <article class="idee">
-        <span class="idee__rang">Ce qui finit par céder</span>
-        <p class="idee__texte">La structure tient, jusqu'au jour où elle ne tient plus — avec des palettes au-dessus de la tête de quelqu'un.</p>
-      </article>
-
-      <article class="idee">
-        <span class="idee__rang">Ce qu'on fait alors</span>
-        <p class="idee__texte">Un rack touché doit être contrôlé, et tout défaut signalé à un responsable sans attendre. En cas de défaut, on le soulage : on retire les palettes qu'il supporte.</p>
-      </article>
-
-    </div>
-
-  </article>
-
-
-  <!-- ========================== FACE 3 ========================== -->
-  <article class="face" id="face-bon" hidden>
-
-    <figure class="face__cadre">
-      <img class="face__image"
-           src="assets/img/comportements/rack-bon.jpg"
-           alt="Un employé explique à son responsable qu'il a tapé un montant par mégarde">
-    </figure>
-
-    <div class="face__propos">
-      <span class="face__etiquette">Le bon réflexe</span>
-      <h1 class="face__phrase">Parlez-en à un <b class="cle">responsable</b> !</h1>
-    </div>
-
-    <div class="idees">
-
-      <article class="idee">
-        <span class="idee__rang">Ralentir et prendre de la marge</span>
-        <p class="idee__texte">Il est important de ralentir dans les allées étroites et de prendre de la marge. Pour cela, avoir des allées dégagées est important.</p>
-      </article>
-
-      <article class="idee">
-        <span class="idee__rang">Prévenir tout de suite</span>
-        <p class="idee__texte">N'oubliez pas de prévenir un responsable rapidement, afin que des mesures soient prises.</p>
-      </article>
-
-      <article class="idee">
-        <span class="idee__rang">Ne pas laisser passer</span>
-        <p class="idee__texte">Mieux vaut signaler immédiatement un choc que découvrir ses conséquences plus tard.</p>
-      </article>
-
-    </div>
-
-  </article>
-
+  <!-- Les faces sont insérées ici, par render(). -->
 
 </main>
 
 
-<!-- L'invite du premier écran : elle disparaît au premier clic et ne
-     revient pas. Son liseré tourne (voir .invite dans style.css). -->
-<p class="invite"><span class="invite__pouls"></span> Cliquez pour continuer</p>
+<!-- Si app.js ne se charge pas, la scène reste vide : la classe sans-js
+     n'est jamais retirée et ce message prend sa place. -->
+<p class="secours">Cette application a besoin de JavaScript pour fonctionner.</p>
 
 
-<!-- Balise classique, surtout PAS type="module" : les modules ES sont
-     bloqués en file://, donc en double-clic. -->
+<!-- ======================== LES MOULES ========================
+     Le contenu d'un <template> est parsé mais pas rendu : pas
+     d'image chargée, pas de style appliqué. On le clone autant de
+     fois qu'on en a besoin.
+     =========================================================== -->
+
+<template id="tpl-carte">
+  <button type="button" class="carte">
+    <span class="carte__vignette"><img class="carte__image" alt=""></span>
+    <span class="carte__texte">
+      <span class="carte__famille"></span>
+      <span class="carte__accroche"></span>
+    </span>
+  </button>
+</template>
+
+<template id="tpl-face">
+  <article class="face" hidden>
+
+    <figure class="face__cadre">
+      <img class="face__image" src="" alt="">
+    </figure>
+
+    <div class="face__propos">
+      <span class="face__etiquette"></span>
+      <h1 class="face__phrase"></h1>
+    </div>
+
+    <!-- La classe "vue" est posée par app.js, une idée par clic. -->
+    <div class="idees"></div>
+
+  </article>
+</template>
+
+<template id="tpl-idee">
+  <article class="idee">
+    <span class="idee__rang"></span>
+    <p class="idee__texte"></p>
+  </article>
+</template>
+
+
+<!-- L'invite : elle apparaît sur la première face ouverte, disparaît au
+     premier clic et ne revient pas. Son liseré tourne (voir .invite). -->
+<p class="invite" hidden><span class="invite__pouls"></span> Cliquez pour continuer</p>
+
+
+<!-- Balises classiques, surtout PAS type="module" : les modules ES sont
+     bloqués en file://, donc en double-clic. L'ORDRE COMPTE — data.js
+     déclare COMPORTEMENTS, app.js le consomme. -->
+<script src="data/data.js"></script>
 <script src="assets/js/app.js"></script>
 
 </body>

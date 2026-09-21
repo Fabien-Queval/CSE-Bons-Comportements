@@ -23,7 +23,6 @@
   document.documentElement.classList.remove("sans-js");
 
   var ORDRE    = ["geste", "consequences", "bon"];
-  var faces    = ORDRE.map(function (nom) { return document.getElementById("face-" + nom); });
   var segments = Array.prototype.slice.call(document.querySelectorAll(".progression__segment"));
   var invite   = document.querySelector(".invite");
   var bouton   = document.querySelector(".theme");
@@ -37,9 +36,209 @@
     getComputedStyle(document.documentElement).getPropertyValue("--parallaxe")
   ) || 0;
 
+  var vue = "accueil";  /* "accueil" ou "fiche" — qui est a l'ecran */
+  var iComportement = 0;/* le comportement ouvert */
   var iFace = 0;        /* la face affichée */
   var iIdee = 0;        /* combien d'idées sont déjà révélées dessus */
+  var enTransition = false;
+  var arreterDecodage = null;
   var premierClic = true;
+
+  
+  /* <=========================== RENDER ===========================>
+     Fabrique la scène à partir d'un objet de data.js. Tout ce qui
+     suit dans ce fichier travaille sur ce qu'elle a produit.
+
+     Rien n'est écrit en innerHTML : on clone un moule et on remplit
+     des textContent. Un texte reste un texte, même s'il contient des
+     chevrons.
+     <===============================================================> */
+
+  var scene   = document.querySelector(".scene");
+  var fil     = document.querySelector(".entete__fil");
+  var tplFace = document.getElementById("tpl-face");
+  var tplIdee = document.getElementById("tpl-idee");
+
+  var accueil  = document.getElementById("accueil");
+  var grille   = document.querySelector(".accueil__grille");
+  var tplCarte = document.getElementById("tpl-carte");
+
+  var faces = [];   /* rempli par render(), dans l'ordre de data.js */
+
+    /* Écrit une phrase-titre dans son <h1>, en isolant le mot-clé.
+     Reçoit "Les accidents en réserve {arrivent}."
+     Produit  Les accidents en réserve <b class="cle">arrivent</b>. */
+
+  function ecrirePhrase(titre, phrase) {
+
+    /* Où sont les accolades ? indexOf renvoie leur position,
+       ou -1 si le caractère n'est pas dans la chaîne. */
+    var ouvre = phrase.indexOf("{");
+    var ferme = phrase.indexOf("}");
+
+    /* Le h1 est vidé : on repart d'un contenant propre. */
+    titre.textContent = "";
+
+    /* Pas de mot-clé ? La phrase s'écrit telle quelle, et on sort. */
+    if (ouvre === -1 || ferme === -1) {
+      titre.textContent = phrase;
+      return;
+    }
+
+    /* Trois morceaux. slice(début, fin) prend le début, pas la fin.
+       ouvre + 1 : le mot commence APRÈS l'accolade ouvrante.
+       ferme + 1 : la suite commence APRÈS l'accolante fermante.
+       slice avec un seul nombre va jusqu'au bout de la chaîne. */
+    var avant = phrase.slice(0, ouvre);
+    var mot   = phrase.slice(ouvre + 1, ferme);
+    var apres = phrase.slice(ferme + 1);
+
+    /* La balise <b class="cle"> est fabriquée en mémoire, vide,
+       puis on lui donne sa classe et son texte. */
+    var b = document.createElement("b");
+    b.className = "cle";
+    b.textContent = mot;
+
+    /* createTextNode fabrique du texte sans balise autour.
+       appendChild colle à la fin : trois appels = trois morceaux
+       dans l'ordre. */
+    titre.appendChild(document.createTextNode(avant));
+    titre.appendChild(b);
+    titre.appendChild(document.createTextNode(apres));
+  }
+
+  function render(comportement) {
+    Array.prototype.slice.call(scene.querySelectorAll(".face"))
+      .forEach(function (face) { face.remove(); });
+
+    fil.textContent = comportement.famille + " · " + comportement.titre;
+
+    faces = comportement.faces.map(function (donnees) {
+      var face = tplFace.content.firstElementChild.cloneNode(true);
+      face.id = "face-" + donnees.cle;
+
+      /* Une face en cours de redaction n'a pas encore son visuel. On
+         retire l'element plutot que de lui laisser un src vide : un
+         src="" declenche une requete vers la page elle-meme. */
+      var image = face.querySelector(".face__image");
+      if (donnees.image) {
+        image.src = donnees.image;
+        image.alt = donnees.alt || "";
+      } else {
+        image.remove();
+        face.querySelector(".face__cadre").classList.add("face__cadre--vide");
+      }
+
+      face.querySelector(".face__etiquette").textContent = donnees.etiquette;
+      ecrirePhrase(face.querySelector(".face__phrase"), donnees.phrase);
+
+      var idees = face.querySelector(".idees");
+      donnees.idees.forEach(function (source) {
+        var idee = tplIdee.content.firstElementChild.cloneNode(true);
+        idee.querySelector(".idee__rang").textContent  = source.rang;
+        idee.querySelector(".idee__texte").textContent = source.texte;
+        idees.appendChild(idee);
+      });
+
+      scene.appendChild(face);
+      return face;
+    });
+  }
+
+
+  /* <========================== L'ACCUEIL ==========================>
+     Une carte par comportement. La carte est un <button> : le clavier
+     la traverse et l'active sans une ligne de code en plus.
+     <===============================================================> */
+
+  function renderCartes() {
+    grille.textContent = "";
+
+    COMPORTEMENTS.forEach(function (comportement, i) {
+      var carte    = tplCarte.content.firstElementChild.cloneNode(true);
+      var vignette = carte.querySelector(".carte__vignette");
+      var image    = carte.querySelector(".carte__image");
+
+      /* Pas encore de visuel : on retire l'element plutot que de lui
+         laisser un src vide, qui declenche une requete vers la page. */
+      if (comportement.vignette) {
+        image.src = comportement.vignette;
+        image.alt = "";
+      } else {
+        image.remove();
+        vignette.classList.add("carte__vignette--vide");
+      }
+
+      carte.querySelector(".carte__famille").textContent  = comportement.famille;
+      carte.querySelector(".carte__accroche").textContent =
+        comportement.accroche || comportement.titre;
+
+      carte.addEventListener("click", function (evenement) {
+        evenement.stopPropagation();
+        ouvrirFiche(i);
+      });
+
+      grille.appendChild(carte);
+    });
+  }
+
+
+  /* <========================= LA NAVIGATION =========================>
+     Une seule vue est rendue a la fois : c'est ce qui garde les
+     view-transition-name uniques. Deux ecrans affiches ensemble et le
+     navigateur abandonne la transition sans message d'erreur.
+     <===============================================================> */
+
+  function ouvrirFiche(i) {
+    if (enTransition) { return; }
+    enTransition = true;
+    iComportement = i;
+
+    transition(function () {
+      render(COMPORTEMENTS[i]);
+      iFace = 0;
+      iIdee = 0;
+      afficher(0);
+      accueil.hidden = true;
+      vue = "fiche";
+      document.body.dataset.vue = "fiche";
+      if (invite) { invite.hidden = !premierClic; }
+    })
+      .then(function () { decoderFace(0); })
+      .catch(function (erreur) { console.error("Ouverture interrompue :", erreur); })
+      .finally(function () { enTransition = false; });
+  }
+
+  function retourAccueil() {
+    if (enTransition || vue !== "fiche") { return; }
+    enTransition = true;
+    if (arreterDecodage) { arreterDecodage(); }
+
+    transition(function () {
+      faces.forEach(function (face) { face.hidden = true; });
+      accueil.hidden = false;
+      vue = "accueil";
+      document.body.dataset.vue = "accueil";
+      if (invite) { invite.hidden = true; }
+    })
+      .catch(function (erreur) { console.error("Retour interrompu :", erreur); })
+      .finally(function () { enTransition = false; });
+  }
+
+  function rejouer() {
+    if (enTransition || vue !== "fiche") { return; }
+    enTransition = true;
+    if (arreterDecodage) { arreterDecodage(); }
+
+    transition(function () {
+      iFace = 0;
+      iIdee = 0;
+      afficher(0);
+    })
+      .then(function () { decoderFace(0); })
+      .catch(function (erreur) { console.error("Relance interrompue :", erreur); })
+      .finally(function () { enTransition = false; });
+  }
 
 
   /* <======================= AFFICHER UNE FACE ======================> */
@@ -61,30 +260,13 @@
 
     ideesDe(i).forEach(function (idee) { idee.classList.remove("vue"); });
 
-    relancerDezoom(i);
-
-    /* Le décodage attend la fin du morph : pendant la transition de vue,
-       l'écran affiché est une PHOTO de la page, pas la page elle-même.
-       Un texte qui change dessous ne se verrait pas. */
-    var cle = faces[i].querySelector(".cle");
-    if (cle) { window.setTimeout(function () { decoder(cle); }, reduit ? 0 : 480); }
-  }
-
-  /* Une animation CSS ne se rejoue pas parce qu'un élément redevient
-     visible. On la retire, on force le navigateur à recalculer le style
-     (la lecture de offsetWidth suffit), puis on la remet. */
-  function relancerDezoom(i) {
-    var image = faces[i].querySelector(".face__image");
-    if (!image) { return; }
-    image.style.animation = "none";
-    void image.offsetWidth;
-    image.style.animation = "";
   }
 
 
   /* <====================== LE MORPH ENTRE FACES =====================>
      startViewTransition prend une photo de l'écran, laisse la fonction
-     modifier le DOM, reprend une photo, puis anime de l'une à l'autre.
+     modifier le DOM, puis anime vers une représentation VIVANTE de la
+     nouvelle face. Ses animations doivent donc être synchronisées.
      Les éléments qui portent un view-transition-name sont morphés
      individuellement : c'est le CSS qui décide comment (voir style.css).
 
@@ -92,9 +274,22 @@
      la fonction. L'écran change d'un coup, rien n'est cassé.
      <===============================================================> */
 
+  /* La nouvelle image apparaît déjà en pause. À la fin réelle du morph,
+     elle reprend sans remise à zéro. finally retire aussi la pause si la
+     transition échoue. Le repli sans API conserve la navigation. */
   function transition(changer) {
-    if (reduit || !document.startViewTransition) { changer(); return; }
-    document.startViewTransition(changer);
+    if (reduit || !document.startViewTransition) {
+      changer();
+      return Promise.resolve();
+    }
+    document.body.classList.add("morph");
+    try {
+      return document.startViewTransition(changer).finished
+        .finally(function () { document.body.classList.remove("morph"); });
+    } catch (erreur) {
+      document.body.classList.remove("morph");
+      return Promise.reject(erreur);
+    }
   }
 
 
@@ -105,6 +300,7 @@
      <=============================================================> */
 
   function avancer() {
+    if (enTransition || vue !== "fiche") { return; }
     if (premierClic) {
       premierClic = false;
       if (invite) { invite.hidden = true; }
@@ -118,9 +314,25 @@
       return;
     }
 
-    iIdee = 0;
-    iFace = (iFace + 1) % faces.length;
-    transition(function () { afficher(iFace); });
+    /* Un décodage encore actif est terminé avant la capture de départ.
+       Les clics et la parallaxe attendent la fin du changement de face. */
+    /* Apres la derniere face, on rend la main a l'accueil plutot que
+       de reboucler : l'employe voit qu'il a fini. */
+    if (iFace === faces.length - 1) { retourAccueil(); return; }
+
+    if (arreterDecodage) { arreterDecodage(); }
+    enTransition = true;
+    var suivante = iFace + 1;
+
+    transition(function () {
+      afficher(suivante);
+      iFace = suivante;
+      iIdee = 0;
+    })
+      .then(function () { decoderFace(suivante); })
+      .catch(function (erreur) { console.error("Transition interrompue :", erreur); })
+      .finally(function () { enTransition = false; });
+
   }
 
 
@@ -133,14 +345,42 @@
 
   var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#%&/*+-";
 
-  function decoder(element) {
+  /* Mesure le titre définitif avant de brouiller ses lettres. La classe
+     empêche flex de modifier cette hauteur pendant le décodage. */
+  function decoderFace(i) {
+    if (arreterDecodage) { arreterDecodage(); }
+    var cle = faces[i].querySelector(".cle");
+    if (!cle) { return; }
+    if (reduit) { decoder(cle); return; }
+
+    var propos = faces[i].querySelector(".face__propos");
+    propos.style.height = propos.getBoundingClientRect().height + "px";
+    propos.classList.add("decodage");
+    arreterDecodage = decoder(cle, function () {
+      propos.classList.remove("decodage");
+      propos.style.height = "";
+      arreterDecodage = null;
+    });
+  }
+
+  function decoder(element, fini) {
     var mot = element.dataset.mot || element.textContent;
     element.dataset.mot = mot;
 
-    if (reduit) { element.textContent = mot; return; }
+    if (reduit) { element.textContent = mot; if (fini) { fini(); } return; }
 
     var debut = performance.now();
     var duree = 620;
+    var frame;
+    var termine = false;
+
+    function terminer() {
+      if (termine) { return; }
+      termine = true;
+      window.cancelAnimationFrame(frame);
+      element.textContent = mot;
+      if (fini) { fini(); }
+    }
 
     function pas(maintenant) {
       var avance = Math.min(1, (maintenant - debut) / duree);
@@ -156,11 +396,12 @@
       }
 
       element.textContent = sortie;
-      if (avance < 1) { window.requestAnimationFrame(pas); }
-      else { element.textContent = mot; }
+      if (avance < 1) { frame = window.requestAnimationFrame(pas); }
+      else { terminer(); }
     }
 
-    window.requestAnimationFrame(pas);
+    frame = window.requestAnimationFrame(pas);
+    return terminer;
   }
 
 
@@ -172,7 +413,8 @@
      <===========================================================> */
 
   window.addEventListener("pointermove", function (evenement) {
-    if (reduit || !amplitude) { return; }
+    if (reduit || !amplitude || enTransition) { return; }
+    if (vue !== "fiche" || !faces[iFace]) { return; }
 
     var image = faces[iFace].querySelector(".face__image");
     if (!image) { return; }
@@ -190,14 +432,25 @@
   /* Le clic est écouté sur le document entier : toute la scène avance,
      sauf le bouton de thème. */
   document.addEventListener("click", function (evenement) {
-    if (evenement.target.closest(".theme")) { return; }
+    var action = evenement.target.closest("[data-action]");
+    if (action) {
+      if (action.dataset.action === "accueil") { retourAccueil(); }
+      if (action.dataset.action === "rejouer") { rejouer(); }
+      return;
+    }
+    if (evenement.target.closest(".theme, .carte")) { return; }
     avancer();
   });
 
   /* Au clavier : espace, entrée, flèche droite. Sans ça, la fiche est
      inutilisable pour qui n'utilise pas de souris. */
   document.addEventListener("keydown", function (evenement) {
-    if (document.activeElement && document.activeElement.closest(".theme")) { return; }
+    /* Un bouton ou une carte qui a le focus gere lui-meme espace et
+       entree : on ne lui coupe pas l'herbe sous le pied. */
+    if (document.activeElement && document.activeElement.closest(".bouton, .carte")) { return; }
+
+    if (evenement.key === "Escape") { retourAccueil(); return; }
+
     if (evenement.key === " " || evenement.key === "Enter" || evenement.key === "ArrowRight") {
       evenement.preventDefault();
       avancer();
@@ -219,6 +472,7 @@
     if (bouton) { bouton.setAttribute("aria-pressed", "true"); }
   }
 
-  afficher(0);
+  renderCartes();
+  document.body.dataset.vue = "accueil";
 
 }());

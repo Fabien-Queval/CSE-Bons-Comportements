@@ -150,8 +150,6 @@
   --rayon:    0.75rem;
   --rayon-sm: 0.375rem;
 
-  --largeur-contenu: 60rem;
-
   --transition: 200ms ease;
 
   --ombre-carte:
@@ -165,6 +163,8 @@
   /* Les réglages de l'écran d'une face. Ce sont les sept valeurs
      qu'on a ajustées à l'œil sur la maquette : elles se modifient ici
      et nulle part ailleurs. */
+
+  --largeur-scene: 88rem;   /* laisse de l'air sur les tres grands ecrans */
 
   --cadre-mini: 14rem;       /* hauteur plancher de la bande image */
   --cadre-fondu:   7%;       /* épaisseur du dégradé sur chaque bord */
@@ -193,6 +193,11 @@ body[data-face="geste"]        { --face: var(--u-jaune); --sur-face: var(--gris-
 body[data-face="consequences"] { --face: var(--u-rouge); --sur-face: var(--gris-50);  }
 body[data-face="bon"]          { --face: var(--u-teal);  --sur-face: var(--gris-50);  }
 
+/* Sur l'accueil, aucune face n'est ouverte : la scene reprend la couleur
+   structurelle de la marque. Regle placee APRES les trois precedentes :
+   a specificite egale, c'est la derniere ecrite qui gagne. */
+body[data-vue="accueil"]       { --face: var(--u-teal);  --sur-face: var(--gris-50);  }
+
 
 /* <=========================== LES THÈMES ===========================>
    Deux ambiances, un seul jeu de noms. Aucune règle de style.css ne
@@ -206,6 +211,7 @@ body {
   --scene-texte: var(--gris-900);
   --scene-doux:  var(--gris-600);
   --scene-trait: rgb(0 0 0 / 0.14);
+  --scene-carte: color-mix(in srgb, var(--gris-50) 72%, transparent);
 }
 
 /* Thème sombre — plus de caractère, on s'éloigne un peu de la charte. */
@@ -214,4 +220,5 @@ body[data-theme="sombre"] {
   --scene-texte: #F3F1EE;
   --scene-doux:  rgb(243 241 238 / 0.68);
   --scene-trait: rgb(255 255 255 / 0.18);
+  --scene-carte: rgb(255 255 255 / 0.06);
 }

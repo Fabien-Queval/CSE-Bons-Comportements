@@ -80,7 +80,27 @@ body {
 
 .progression__segment.franchi::after { transform: scaleX(1); }
 
+.entete__barre {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-6);
+}
+
+/* Emplacement du branding. Un logo image se glisse ici sans rien changer :
+   il suffit de lui donner une hauteur. */
+.marque {
+  flex: none;
+  color: var(--scene-texte);
+  font-size: var(--texte-base);
+  font-weight: var(--gras-titre);
+  letter-spacing: -0.01em;
+}
+
+.marque img { height: 1.6rem; width: auto; }
+
 .entete__fil {
+  flex: 1;
+  min-width: 0;
   color: var(--scene-doux);
   font-size: var(--texte-sm);
   font-weight: var(--gras-demi);
@@ -113,7 +133,9 @@ body {
 
 .face__propos {
   order: 1;
-  margin-top: calc(var(--espace-8) + var(--espace-6));
+  /* La barre du haut (progression + marque + fil + boutons) occupe
+     environ 90px. On demarre franchement dessous. */
+  margin-top: calc(var(--espace-12) * 2);
   pointer-events: none;
 }
 
@@ -276,6 +298,9 @@ body {
     margin: var(--espace-6) 0;
   }
 
+  .accueil { position: static; padding-top: calc(var(--espace-12) * 2); }
+  .accueil__grille { overflow: visible; }
+
   .idees { flex-direction: column; height: auto; margin-top: var(--espace-6); }
   .idee.vue { padding-right: 0; padding-bottom: var(--espace-6); }
 }
@@ -437,7 +462,9 @@ body::after {
   border: 1px solid transparent;
   border-radius: 999px;
   background:
-    linear-gradient(var(--surface), var(--surface)) padding-box,
+    /* Opaque, sinon le degrade conique de la bordure transparait
+       a travers la pastille. --scene-fond suit les deux themes. */
+    linear-gradient(var(--scene-fond), var(--scene-fond)) padding-box,
     conic-gradient(from var(--angle),
       transparent 0deg, var(--face) 90deg, transparent 200deg) border-box;
   box-shadow: 0 2px 22px color-mix(in srgb, var(--face) 30%, transparent);
@@ -468,11 +495,16 @@ body::after {
    L'en-tête laisse passer les clics (pointer-events:none) pour que toute
    la scène fasse avancer le parcours. Ce bouton doit donc les reprendre. */
 
-.theme {
-  position: absolute;
-  top: var(--espace-6);
-  right: var(--espace-8);
+.outils {
+  flex: none;
+  margin-left: auto;   /* sur l'accueil le fil est masque : sans ca,
+                          les boutons remonteraient contre la marque */
+  display: flex;
+  gap: var(--espace-2);
   pointer-events: auto;
+}
+
+.bouton {
   padding: var(--espace-2) var(--espace-4);
   border: 1px solid var(--scene-trait);
   border-radius: 999px;
@@ -481,29 +513,41 @@ body::after {
   font-size: var(--texte-sm);
   font-weight: var(--gras-demi);
   letter-spacing: 0.06em;
+  white-space: nowrap;
   cursor: pointer;
   transition: background var(--transition), color var(--transition);
 }
 
-.theme:hover { background: color-mix(in srgb, var(--face) 18%, transparent); }
-.theme:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.bouton:hover { background: color-mix(in srgb, var(--face) 18%, transparent); }
+.bouton:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Accueil et Recommencer n'ont aucun sens sur l'accueil lui-meme. */
+body[data-vue="accueil"] .bouton--fiche,
+body[data-vue="accueil"] .progression,
+body[data-vue="accueil"] .entete__fil { display: none; }
 
 
 /* <---- 6.10 Si le JavaScript ne se charge pas ---->
-   app.js retire cette classe dès qu'il démarre. Tant qu'elle est là, les
-   idées sont toutes visibles : une fiche figée vaut mieux qu'une fiche
-   vide. L'invite, elle, ne promet rien qu'on ne puisse tenir. */
+   app.js retire cette classe dès qu'il démarre. Depuis le fil 4, la
+   scène est fabriquée par render() : sans script, elle reste vide et
+   il n'y a plus de repli possible. On le dit, au lieu de laisser un
+   écran nu. L'invite et le bouton de thème ne promettent rien qu'on
+   ne puisse tenir. */
 
-html.sans-js .idee {
-  flex-grow: 1;
-  padding-right: var(--espace-8);
-  opacity: 1;
-  transform: none;
-  filter: none;
+.secours { display: none; }
+
+html.sans-js .secours {
+  display: grid;
+  place-content: center;
+  height: 100vh;
+  padding: var(--espace-8);
+  color: var(--scene-doux);
+  font-size: var(--texte-sm);
+  text-align: center;
 }
 
 html.sans-js .invite,
-html.sans-js .theme { display: none; }
+html.sans-js .outils { display: none; }
 
 
 /* <---- 6.11 Le garde-fou ---->
@@ -515,4 +559,195 @@ html.sans-js .theme { display: none; }
   body::before { display: none; }
   .face__image { translate: none; }
   .idee { filter: none; }
+}
+
+/* <---- 6.12 Synchroniser le morph et le décodage ---->
+   La nouvelle vue reste vivante pendant le morph. Le dézoom est mis en
+   pause AVANT son apparition, puis reprend sans saut d'échelle. */
+body.morph .face__image { animation-play-state: paused; }
+
+/* La hauteur mesurée en JS reste exacte, même si le texte brouillé
+   change de lignes. Le débordement provisoire ne recouvre pas l'image. */
+.face__propos.decodage {
+  flex: none;
+  min-height: 0;
+  overflow: hidden;
+}
+
+
+/* <---- 6.13 Un cadre qui attend encore son visuel ---->
+   Pendant la redaction des comportements, une face peut n'avoir pas
+   d'image. Plutot qu'un trou, une surface teintee par la face, rayee,
+   qui annonce ce qui manque. Le fondu des bords (::after) continue de
+   s'appliquer par-dessus. */
+
+.face__cadre--vide {
+  display: grid;
+  place-content: center;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--face) 9%, transparent) 0 14px,
+      transparent 14px 28px),
+    color-mix(in srgb, var(--face) 5%, var(--scene-fond));
+}
+
+.face__cadre--vide::before {
+  content: "Visuel a venir";
+  color: var(--scene-doux);
+  font-size: var(--texte-sm);
+  font-weight: var(--gras-demi);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+
+/* <=========================== 7. ACCUEIL ===========================>
+   La grille de cartes. Meme modele que les faces : un ecran plein,
+   pose en absolu sur la scene, cache par l'attribut hidden quand une
+   fiche est ouverte. Une seule des deux vues est rendue a la fois —
+   c'est ce qui garde les view-transition-name uniques.
+   <=================================================================> */
+
+.accueil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: var(--largeur-scene);
+  margin-inline: auto;
+  padding: calc(var(--espace-12) * 2) var(--espace-8) var(--espace-8);
+}
+
+.accueil[hidden] { display: none; }
+
+.accueil__tete {
+  flex: none;
+  max-width: 46rem;
+  margin: 0 auto var(--espace-8);
+  text-align: center;
+}
+
+.accueil__titre {
+  font-size: clamp(1.8rem, 3.4vw, 2.9rem);
+  font-weight: var(--gras-titre);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.accueil__intro {
+  margin-top: var(--espace-3);
+  color: var(--scene-doux);
+  text-wrap: balance;
+}
+
+/* auto-fit + minmax : le navigateur decide du nombre de colonnes selon
+   la place. La largeur maximale de la grille est ce qui fixe en pratique
+   trois colonnes sur un grand ecran, une seule sur un petit. */
+.accueil__grille {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 66rem;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 21rem));
+  gap: var(--espace-6);
+  justify-content: center;
+  align-content: start;
+  overflow-y: auto;
+  padding-bottom: var(--espace-4);
+}
+
+
+/* <---- La carte ---->
+   Un <button> : le clavier le traverse et l'active sans une ligne de JS
+   en plus. D'ou la remise a zero de font, text-align et padding, que le
+   navigateur impose aux boutons. */
+
+.carte {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 1px solid var(--scene-trait);
+  border-radius: var(--rayon);
+  background: var(--scene-carte);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    translate 300ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color var(--transition),
+    box-shadow 300ms ease;
+}
+
+.carte:hover,
+.carte:focus-visible {
+  translate: 0 -4px;
+  border-color: var(--face);
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--face) 20%, transparent);
+}
+
+.carte:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+.carte__vignette {
+  display: block;
+  position: relative;
+  /* flex:none, sinon la vignette se laisse comprimer par une accroche
+     sur deux lignes et les cartes d'une meme rangee ne s'alignent plus. */
+  flex: none;
+  aspect-ratio: 16 / 10;
+  border-bottom: 1px solid var(--scene-trait);
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--face) 10%, transparent) 0 12px,
+      transparent 12px 24px),
+    color-mix(in srgb, var(--face) 6%, var(--scene-fond));
+  overflow: hidden;
+}
+
+.carte__image { width: 100%; height: 100%; object-fit: cover; }
+
+/* Le libelle n'apparait que sur une vignette dont l'image n'existe pas
+   encore : app.js pose la classe en meme temps qu'il retire le <img>. */
+.carte__vignette--vide::after {
+  content: "Visuel a venir";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  color: var(--scene-doux);
+  font-size: var(--texte-sm);
+  font-weight: var(--gras-demi);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.carte__texte { display: block; padding: var(--espace-4); }
+
+.carte__famille {
+  display: block;
+  margin-bottom: var(--espace-2);
+  color: var(--face);
+  font-size: var(--texte-sm);
+  font-weight: var(--gras-titre);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.carte__accroche {
+  display: block;
+  font-size: var(--texte-lg);
+  font-weight: var(--gras-fort);
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carte:hover, .carte:focus-visible { translate: none; }
 }
