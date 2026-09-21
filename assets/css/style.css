@@ -5,6 +5,7 @@
    3. IMAGE     — la bande panoramique et son fondu
    4. IDÉES     — les colonnes du bas
    5. PETITS ÉCRANS
+   6. EFFETS    — ambiance, morph, grain, parallaxe, invite, thème
    <===============================================================> */
 
 
@@ -290,4 +291,228 @@ body {
     animation-duration: 1ms !important;
   }
   .face__image { transform: none; }
+}
+
+
+/* <============================ 6. EFFETS ============================>
+   Ajoutés le 21/09 après la démo technique. Chaque bloc est indépendant :
+   supprimer un bloc retire un effet et ne casse rien d'autre.
+   Les réglages (force du grain, amplitude, durée) sont dans tokens.css.
+   <=================================================================> */
+
+
+/* <---- 6.1 L'ambiance suit la face ---->
+   --face est déclarée en @property, donc interpolable. Il suffit de la
+   mettre dans la liste des transitions : --scene-fond est un color-mix
+   qui la consomme, il est recalculé à chaque image du fondu. */
+
+body {
+  transition:
+    --face 800ms ease,
+    background 600ms ease,
+    color 300ms ease;
+}
+
+
+/* <---- 6.2 La lueur ---->
+   Un halo très large, teinté par la face, posé DERRIÈRE tout le reste.
+   C'est ce qui empêche les aplats de charte de paraître plats. */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    55% 45% at 50% 45%,
+    color-mix(in srgb, var(--face) var(--lueur-force), transparent) 0%,
+    transparent 70%);
+  filter: blur(40px);
+}
+
+
+/* <---- 6.3 Le grain ---->
+   Un bruit SVG en data: URI — aucun fichier, aucune requête, donc rien
+   à charger en file://. Posé AU-DESSUS de tout, en fusion overlay :
+   il assombrit les zones claires et éclaircit les sombres, sans teinter. */
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  opacity: var(--grain-force);
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+
+/* <---- 6.4 Le morph d'une face à l'autre ---->
+   Nommer un élément suffit : le navigateur retrouve le même nom dans
+   l'état d'arrivée et interpole POSITION et TAILLE tout seul. L'image
+   n'a donc besoin d'aucune règle — elle glisse et se redimensionne.
+   Les règles ci-dessous ne servent qu'à chorégraphier le TEXTE, que le
+   navigateur se contenterait sinon de fondre. */
+
+.face__cadre     { view-transition-name: scene; }
+.face__phrase    { view-transition-name: phrase; }
+.face__etiquette { view-transition-name: etiquette; }
+.progression     { view-transition-name: progression; }
+
+::view-transition-group(*) { animation-duration: var(--morph-duree); }
+
+::view-transition-old(phrase) { animation: phrase-sort 340ms cubic-bezier(0.4, 0, 1, 1) both; }
+::view-transition-new(phrase) { animation: phrase-entre 500ms 140ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+@keyframes phrase-sort  { to   { opacity: 0; transform: translateY(-16px); filter: blur(7px); } }
+@keyframes phrase-entre { from { opacity: 0; transform: translateY(22px);  filter: blur(7px); } }
+
+::view-transition-old(etiquette) { animation: etiquette-sort 280ms ease both; }
+::view-transition-new(etiquette) { animation: etiquette-entre 450ms 200ms ease both; }
+
+@keyframes etiquette-sort  { to   { opacity: 0; transform: translateX(-12px); } }
+@keyframes etiquette-entre { from { opacity: 0; transform: translateY(22px); } }
+
+
+/* <---- 6.5 La parallaxe ---->
+   --px et --py sont écrits par app.js au mouvement de la souris.
+   translate est une propriété à part entière : elle n'écrase pas le
+   transform: scale() du dézoom, les deux cohabitent. */
+
+.face__image {
+  translate: var(--px, 0px) var(--py, 0px);
+  transition: translate 450ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+
+/* <---- 6.6 L'arrivée des idées ---->
+   La liste des transitions est REÉCRITE en entier, pas complétée : une
+   déclaration de transition remplace la précédente. On reprend donc les
+   quatre d'origine et on ajoute le flou. */
+
+.idee {
+  filter: blur(6px);
+  transition:
+    flex-grow 600ms cubic-bezier(0.2, 0.7, 0.3, 1),
+    opacity   450ms ease,
+    transform 550ms cubic-bezier(0.2, 0.7, 0.3, 1),
+    padding   600ms ease,
+    filter    450ms ease;
+}
+
+.idee.vue { filter: blur(0); }
+
+
+/* <---- 6.7 Le mot-clé de la phrase ---->
+   Un surlignement, pas une couleur de texte : les trois couleurs de face
+   n'ont pas un contraste suffisant pour porter du texte (voir la note de
+   tokens.css). Le mot reste noir sur fond clair, la couleur passe dessous. */
+
+.cle {
+  font-weight: inherit;
+  background-image: linear-gradient(to top,
+    color-mix(in srgb, var(--face) 55%, transparent) 0 0.20em,
+    transparent 0.20em);
+  padding-inline: 0.06em;
+}
+
+
+/* <---- 6.8 L'invite de départ ---->
+   Bordure en dégradé conique dont l'angle tourne. Deux fonds : le premier
+   s'arrête au padding-box, le second remplit jusqu'au border-box. Comme la
+   bordure est transparente, c'est le second qu'on voit à travers. */
+
+.invite {
+  position: fixed;
+  z-index: 4;
+  bottom: var(--espace-6);
+  left: 50%;
+  translate: -50% 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espace-2);
+  padding: var(--espace-2) var(--espace-6);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    conic-gradient(from var(--angle),
+      transparent 0deg, var(--face) 90deg, transparent 200deg) border-box;
+  box-shadow: 0 2px 22px color-mix(in srgb, var(--face) 30%, transparent);
+  color: var(--texte-discret);
+  font-size: var(--texte-sm);
+  font-weight: var(--gras-demi);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  animation: tourner 4s linear infinite;
+}
+
+.invite[hidden] { display: none; }
+
+@keyframes tourner { to { --angle: 360deg; } }
+
+.invite__pouls {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--face);
+  animation: battre 2s ease-in-out infinite;
+}
+
+@keyframes battre { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+
+
+/* <---- 6.9 La bascule de thème ---->
+   L'en-tête laisse passer les clics (pointer-events:none) pour que toute
+   la scène fasse avancer le parcours. Ce bouton doit donc les reprendre. */
+
+.theme {
+  position: absolute;
+  top: var(--espace-6);
+  right: var(--espace-8);
+  pointer-events: auto;
+  padding: var(--espace-2) var(--espace-4);
+  border: 1px solid var(--scene-trait);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--scene-doux);
+  font-size: var(--texte-sm);
+  font-weight: var(--gras-demi);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.theme:hover { background: color-mix(in srgb, var(--face) 18%, transparent); }
+.theme:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+
+/* <---- 6.10 Si le JavaScript ne se charge pas ---->
+   app.js retire cette classe dès qu'il démarre. Tant qu'elle est là, les
+   idées sont toutes visibles : une fiche figée vaut mieux qu'une fiche
+   vide. L'invite, elle, ne promet rien qu'on ne puisse tenir. */
+
+html.sans-js .idee {
+  flex-grow: 1;
+  padding-right: var(--espace-8);
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+html.sans-js .invite,
+html.sans-js .theme { display: none; }
+
+
+/* <---- 6.11 Le garde-fou ---->
+   La règle de la section précédente réduit déjà toutes les durées. On
+   coupe en plus ce qui bouge en permanence ou sans clic. */
+
+@media (prefers-reduced-motion: reduce) {
+  .invite, .invite__pouls { animation: none; }
+  body::before { display: none; }
+  .face__image { translate: none; }
+  .idee { filter: none; }
 }

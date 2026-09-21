@@ -51,6 +51,25 @@
 }
 
 
+/* <========================= @property =========================>
+   Déclarer une variable avec son TYPE la rend interpolable, donc
+   animable. Sans cette déclaration, --face saute d'une couleur à
+   l'autre ; avec elle, toute la scène change d'ambiance en fondu.
+   <=============================================================> */
+
+@property --face {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #007D8E;
+}
+
+@property --angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+
 :root {
 
   /* <---- 1. PRIMITIFS — charte Courses U ----> */
@@ -153,6 +172,12 @@
   --zoom-depart:   1.25;     /* échelle de départ de l'image */
   --zoom-duree:    6s;       /* durée du dézoom */
   --bande-basse:   11rem;    /* hauteur réservée aux colonnes d'idées */
+
+  /* Ajoutés avec les effets : voir la section 6 de style.css. */
+  --grain-force:   0.05;     /* opacité du grain posé sur toute la page */
+  --parallaxe:     14px;     /* amplitude du décalage de l'image à la souris */
+  --lueur-force:   28%;      /* intensité du halo teinté derrière la bande */
+  --morph-duree:   620ms;    /* durée du passage d'une face à l'autre */
 }
 
 

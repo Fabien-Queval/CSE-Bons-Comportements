@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="sans-js">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,12 +10,14 @@
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
-<!-- Deux attributs pilotent toute la page tant qu'il n'y a pas de JS :
-       data-theme  : "clair" ou "sombre"
+<!-- Deux attributs pilotent toute la page :
+       data-theme  : "clair" ou "sombre" — le bouton de l'en-tête le change
        data-face   : "geste", "consequences" ou "bon" — donne sa couleur
-                     à la scène. À changer EN MÊME TEMPS que le hidden
-                     des faces ci-dessous. Le JS s'en chargera plus tard. -->
-<body data-theme="clair" data-face="bon">
+                     à la scène.
+     Depuis l'arrivée d'app.js, c'est LUI qui écrit data-face et le hidden
+     des faces. Les valeurs ci-dessous ne servent plus qu'à l'affichage
+     initial, avant que le script ne prenne la main. -->
+<body data-theme="clair" data-face="geste">
 
 <main class="scene">
 
@@ -26,12 +28,17 @@
 
     <!-- Un segment par face. La classe "franchi" remplit le segment. -->
     <div class="progression">
-      <span class="progression__segment progression__segment--geste franchi"></span>
-      <span class="progression__segment progression__segment--consequences franchi"></span>
-      <span class="progression__segment progression__segment--bon franchi"></span>
+      <span class="progression__segment progression__segment--geste"></span>
+      <span class="progression__segment progression__segment--consequences"></span>
+      <span class="progression__segment progression__segment--bon"></span>
     </div>
 
     <p class="entete__fil">Manutention · J'ai percuté un rack</p>
+
+    <!-- « ça fait classe de laisser le choix » : la bascule appartient à
+         l'utilisateur. L'en-tête laisse passer les clics, ce bouton les
+         reprend (voir .theme dans style.css). -->
+    <button type="button" class="theme" aria-pressed="false">Thème</button>
 
   </header>
 
@@ -41,7 +48,7 @@
        son titre, ses idées. C'est ce qui permettra plus tard de la
        fabriquer d'un bloc à partir de data.js.
        =========================================================== -->
-  <article class="face" id="face-geste" hidden>
+  <article class="face" id="face-geste">
 
     <figure class="face__cadre">
       <img class="face__image"
@@ -51,24 +58,23 @@
 
     <div class="face__propos">
       <span class="face__etiquette">Le geste</span>
-      <h1 class="face__phrase">Les accidents en réserve arrivent.</h1>
+      <h1 class="face__phrase">Les accidents en réserve <b class="cle">arrivent</b>.</h1>
     </div>
 
-    <!-- La classe "vue" est posée à la main pour l'instant. Au fil
-         suivant, le JS l'ajoutera clic après clic. -->
+    <!-- La classe "vue" est posée par app.js, une idée par clic. -->
     <div class="idees">
 
-      <article class="idee vue">
+      <article class="idee">
         <span class="idee__rang">Ça arrive</span>
         <p class="idee__texte">Parfois, l'appareil est un peu brusque, et sa puissance et son poids suffisent à endommager le montant des racks.</p>
       </article>
 
-      <article class="idee vue">
+      <article class="idee">
         <span class="idee__rang">Ça se joue à peu</span>
         <p class="idee__texte">Parfois on manœuvre sans marge, ou trop près des lisses.</p>
       </article>
 
-      <article class="idee vue">
+      <article class="idee">
         <span class="idee__rang">Ça ne fait pas de bruit</span>
         <p class="idee__texte">Parfois on touche juste un montant, même pas réellement fort.</p>
       </article>
@@ -89,22 +95,22 @@
 
     <div class="face__propos">
       <span class="face__etiquette">Ce que ça coûte</span>
-      <h1 class="face__phrase">Un montant plié ne porte plus ce qu'il portait.</h1>
+      <h1 class="face__phrase">Un montant plié <b class="cle">ne porte plus</b> ce qu'il portait.</h1>
     </div>
 
     <div class="idees">
 
-      <article class="idee vue">
+      <article class="idee">
         <span class="idee__rang">Ce qui est abîmé</span>
         <p class="idee__texte">Un montant plié ne porte plus ce qu'il portait avant.</p>
       </article>
 
-      <article class="idee vue">
+      <article class="idee">
         <span class="idee__rang">Ce qui finit par céder</span>
         <p class="idee__texte">La structure tient, jusqu'au jour où elle ne tient plus — avec des palettes au-dessus de la tête de quelqu'un.</p>
       </article>
 
-      <article class="idee vue">
+      <article class="idee">
         <span class="idee__rang">Ce qu'on fait alors</span>
         <p class="idee__texte">Un rack touché doit être contrôlé, et tout défaut signalé à un responsable sans attendre. En cas de défaut, on le soulage : on retire les palettes qu'il supporte.</p>
       </article>
@@ -115,7 +121,7 @@
 
 
   <!-- ========================== FACE 3 ========================== -->
-  <article class="face" id="face-bon">
+  <article class="face" id="face-bon" hidden>
 
     <figure class="face__cadre">
       <img class="face__image"
@@ -125,22 +131,22 @@
 
     <div class="face__propos">
       <span class="face__etiquette">Le bon réflexe</span>
-      <h1 class="face__phrase">Parlez-en à un responsable !</h1>
+      <h1 class="face__phrase">Parlez-en à un <b class="cle">responsable</b> !</h1>
     </div>
 
     <div class="idees">
 
-      <article class="idee vue">
+      <article class="idee">
         <span class="idee__rang">Ralentir et prendre de la marge</span>
         <p class="idee__texte">Il est important de ralentir dans les allées étroites et de prendre de la marge. Pour cela, avoir des allées dégagées est important.</p>
       </article>
 
-      <article class="idee vue">
+      <article class="idee">
         <span class="idee__rang">Prévenir tout de suite</span>
         <p class="idee__texte">N'oubliez pas de prévenir un responsable rapidement, afin que des mesures soient prises.</p>
       </article>
 
-      <article class="idee vue">
+      <article class="idee">
         <span class="idee__rang">Ne pas laisser passer</span>
         <p class="idee__texte">Mieux vaut signaler immédiatement un choc que découvrir ses conséquences plus tard.</p>
       </article>
@@ -151,6 +157,16 @@
 
 
 </main>
+
+
+<!-- L'invite du premier écran : elle disparaît au premier clic et ne
+     revient pas. Son liseré tourne (voir .invite dans style.css). -->
+<p class="invite"><span class="invite__pouls"></span> Cliquez pour continuer</p>
+
+
+<!-- Balise classique, surtout PAS type="module" : les modules ES sont
+     bloqués en file://, donc en double-clic. -->
+<script src="assets/js/app.js"></script>
 
 </body>
 </html>
