@@ -133,9 +133,7 @@ body {
 
 .face__propos {
   order: 1;
-  /* La barre du haut (progression + marque + fil + boutons) occupe
-     environ 90px. On demarre franchement dessous. */
-  margin-top: calc(var(--espace-12) * 2);
+  margin-top: var(--entete-hauteur);
   pointer-events: none;
 }
 
@@ -751,3 +749,55 @@ body.morph .face__image { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
   .carte:hover, .carte:focus-visible { translate: none; }
 }
+
+
+/* <===================== 8. LA HAUTEUR D'ECRAN =====================>
+   L'ecran ne defile pas : la contrainte n'est pas la largeur mais la
+   HAUTEUR. Le cadre image prend ce qui reste entre le titre et les
+   colonnes ; sans ces paliers, il passe d'une bande 5,5:1 sur un ecran
+   court a un format presque carre sur un grand. A chaque palier on
+   reprend de la place aux marges et aux colonnes, pour que la bande
+   garde une allure de bande.
+
+   Les media queries redefinissent des TOKENS, pas des regles : c'est
+   tokens.css qui decide des valeurs, style.css n'en connait aucune.
+   <=================================================================> */
+
+/* --- Ecrans courts : 1600x900, 1680x1050 --- */
+@media (max-height: 950px) {
+  :root {
+    --bande-basse: 9.5rem;
+    --entete-hauteur: 5.5rem;
+  }
+  .face__phrase { font-size: clamp(1.6rem, 3.2vw, 2.6rem); }
+}
+
+/* --- Ecrans tres courts : 1366x768, portables --- */
+@media (max-height: 800px) {
+  :root {
+    --bande-basse: 8.5rem;
+    --cadre-mini: 10rem;
+    --entete-hauteur: 4.5rem;
+  }
+
+  /* La barre se tasse aussi : c'est ce qui autorise --entete-hauteur
+     a descendre sans que l'etiquette ne vienne mordre dessus. */
+  .entete         { padding-top: var(--espace-3); }
+  .progression    { margin-bottom: var(--espace-3); }
+
+  .face__etiquette { margin-bottom: var(--espace-2); }
+  .face__cadre     { margin-block: var(--espace-3); }
+  .face__phrase    { font-size: clamp(1.4rem, 2.8vw, 2.1rem); }
+  .accueil         { padding-top: calc(var(--espace-12) + var(--espace-8)); }
+  .accueil__tete   { margin-bottom: var(--espace-6); }
+}
+
+/* --- Grands ecrans : on plafonne, sinon la bande devient un carre.
+       L'espace libere descend vers les colonnes, collees en bas. --- */
+@media (min-height: 1100px) {
+  .face__cadre { max-height: 46vh; }
+}
+
+/* Utile des que le cadre est plafonne : les colonnes restent en bas au
+   lieu de suivre l'image et de laisser un vide sous elles. */
+.idees { margin-top: auto; }

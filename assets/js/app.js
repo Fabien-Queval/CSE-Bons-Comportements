@@ -124,6 +124,15 @@
       if (donnees.image) {
         image.src = donnees.image;
         image.alt = donnees.alt || "";
+
+        /* Le cadre ne montre qu'une bande horizontale de l'image, et sa
+           hauteur depend de l'ecran. `cadrage` decide QUELLE bande :
+           30% remonte vers le haut de l'image, 70% descend. Reglable
+           image par image, parce qu'une bulle de BD ne se trouve pas
+           toujours a la meme hauteur. */
+        if (donnees.cadrage) {
+          image.style.setProperty("--photo-cadrage", donnees.cadrage);
+        }
       } else {
         image.remove();
         face.querySelector(".face__cadre").classList.add("face__cadre--vide");
@@ -161,8 +170,12 @@
 
       /* Pas encore de visuel : on retire l'element plutot que de lui
          laisser un src vide, qui declenche une requete vers la page. */
-      if (comportement.vignette) {
-        image.src = comportement.vignette;
+      /* A defaut de vignette propre, la carte reprend l'image de sa
+         premiere face : elle annonce exactement ce qu'on va voir. */
+      var apercu = comportement.vignette || (comportement.faces[0] || {}).image;
+
+      if (apercu) {
+        image.src = apercu;
         image.alt = "";
       } else {
         image.remove();
