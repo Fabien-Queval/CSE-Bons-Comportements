@@ -172,7 +172,9 @@
   --entete-hauteur: 6rem;
 
   --cadre-mini: 14rem;       /* hauteur plancher de la bande image */
-  --cadre-fondu:   7%;       /* épaisseur du dégradé sur chaque bord */
+  --cadre-fondu:   5%;       /* épaisseur du fondu sur chaque bord —
+                                la courbe en S le rend invisible plus
+                                mince qu'une rampe droite */
   --photo-cadrage: 50%;      /* 30% remonte le cadrage, 70% le descend */
   --zoom-depart:   1.25;     /* échelle de départ de l'image */
   --zoom-duree:    6s;       /* durée du dézoom */

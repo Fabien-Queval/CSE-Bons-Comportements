@@ -196,20 +196,62 @@ body {
   to { transform: none; }
 }
 
-/* Le fondu : des dégradés de la couleur du fond, et non un masque.
-   Il se recolore donc tout seul quand on bascule de thème. */
-.face__cadre::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(to bottom,
-      var(--scene-fond) 0%, transparent var(--cadre-fondu),
-      transparent calc(100% - var(--cadre-fondu)), var(--scene-fond) 100%),
-    linear-gradient(to right,
-      var(--scene-fond) 0%, transparent var(--cadre-fondu),
-      transparent calc(100% - var(--cadre-fondu)), var(--scene-fond) 100%);
+/* <---- Le fondu des bords ---->
+   On ne PEINT plus la couleur du fond par-dessus l'image : on rend
+   l'image transparente sur ses bords. Deux consequences.
+
+   1. Le vrai fond apparait dessous — la lueur teintee de body::before
+      et le grain de body::after compris. Une couleur peinte a plat les
+      ignorait, et les bords se fondaient vers une teinte legerement
+      fausse. Plus rien a recolorer au changement de theme non plus.
+
+   2. Les arrets intermediaires dessinent une courbe en S (smoothstep,
+      3t² - 2t³) au lieu d'une droite. Une rampe droite a deux cassures
+      de pente, une a chaque bout, et l'oeil les voit : ce sont elles
+      qui faisaient un bord dur, pas la forme du cadre. Avec la courbe,
+      --cadre-fondu peut descendre a 5% sans que le fondu se voie, donc
+      on perd moins d'image.
+
+   mask-composite: intersect — les deux masques se multiplient au lieu
+   de s'additionner, et les quatre coins s'adoucissent tout seuls. */
+
+.face__cadre {
+  --rampe-v: linear-gradient(to bottom,
+    transparent                 0,
+    rgba(0, 0, 0, 0.074)        calc(var(--cadre-fondu) * 0.167),
+    rgba(0, 0, 0, 0.259)        calc(var(--cadre-fondu) * 0.333),
+    rgba(0, 0, 0, 0.5)          calc(var(--cadre-fondu) * 0.5),
+    rgba(0, 0, 0, 0.741)        calc(var(--cadre-fondu) * 0.667),
+    rgba(0, 0, 0, 0.926)        calc(var(--cadre-fondu) * 0.833),
+    #000                        var(--cadre-fondu),
+    #000                        calc(100% - var(--cadre-fondu)),
+    rgba(0, 0, 0, 0.926)        calc(100% - var(--cadre-fondu) * 0.833),
+    rgba(0, 0, 0, 0.741)        calc(100% - var(--cadre-fondu) * 0.667),
+    rgba(0, 0, 0, 0.5)          calc(100% - var(--cadre-fondu) * 0.5),
+    rgba(0, 0, 0, 0.259)        calc(100% - var(--cadre-fondu) * 0.333),
+    rgba(0, 0, 0, 0.074)        calc(100% - var(--cadre-fondu) * 0.167),
+    transparent                 100%);
+
+  --rampe-h: linear-gradient(to right,
+    transparent                 0,
+    rgba(0, 0, 0, 0.074)        calc(var(--cadre-fondu) * 0.167),
+    rgba(0, 0, 0, 0.259)        calc(var(--cadre-fondu) * 0.333),
+    rgba(0, 0, 0, 0.5)          calc(var(--cadre-fondu) * 0.5),
+    rgba(0, 0, 0, 0.741)        calc(var(--cadre-fondu) * 0.667),
+    rgba(0, 0, 0, 0.926)        calc(var(--cadre-fondu) * 0.833),
+    #000                        var(--cadre-fondu),
+    #000                        calc(100% - var(--cadre-fondu)),
+    rgba(0, 0, 0, 0.926)        calc(100% - var(--cadre-fondu) * 0.833),
+    rgba(0, 0, 0, 0.741)        calc(100% - var(--cadre-fondu) * 0.667),
+    rgba(0, 0, 0, 0.5)          calc(100% - var(--cadre-fondu) * 0.5),
+    rgba(0, 0, 0, 0.259)        calc(100% - var(--cadre-fondu) * 0.333),
+    rgba(0, 0, 0, 0.074)        calc(100% - var(--cadre-fondu) * 0.167),
+    transparent                 100%);
+
+  -webkit-mask-image: var(--rampe-v), var(--rampe-h);
+  -webkit-mask-composite: source-in;
+          mask-image: var(--rampe-v), var(--rampe-h);
+          mask-composite: intersect;
 }
 
 

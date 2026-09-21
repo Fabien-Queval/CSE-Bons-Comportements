@@ -197,6 +197,86 @@ const COMPORTEMENTS = [
         ]
       }
     ]
+  },
+
+  {
+    id: "oublis-fermeture",
+    famille: "Locaux",
+    titre: "J'ai ouvert... et j'ai oublié",
+    accroche: "Quelqu'un fermera bien derrière moi...",
+    vignette: "",
+
+    faces: [
+
+      {
+        cle: "geste",
+        etiquette: "Comment commencent les ennuis",
+        phrase: "Ouvrir ou allumer, c'est la moitié du {geste}.",
+        image: "",
+        cadrage: "50%",
+        alt: "Un employé passe devant un bureau resté allumé avec une fenêtre ouverte",
+        idees: [
+          {
+            rang: "On peut tous oublier",
+            texte: "Une lumière laissée allumée, une fenêtre restée ouverte ou une porte non refermée, ça peut arriver à tout le monde."
+          },
+          {
+            rang: "Ce n'est pas une faute morale",
+            texte: "L'important n'est pas de savoir qui a oublié, mais de voir ce qui reste à remettre en état."
+          },
+          {
+            rang: "On bosse ensemble",
+            texte: "Si je vois une lumière allumée ou une ouverture laissée ouverte, je peux agir, même si ce n'est pas moi qui l'ai laissée ainsi."
+          }
+        ]
+      },
+
+      {
+        cle: "consequences",
+        etiquette: "Ce que ça coûte",
+        phrase: "Le soir, un oubli peut laisser une vraie {faille}.",
+        image: "",
+        cadrage: "50%",
+        alt: "Le magasin de nuit avec une fenêtre ouverte, des lumières restées allumées et des silhouettes de voleurs sur le toit",
+        idees: [
+          {
+            rang: "Un oubli bloque la fermeture",
+            texte: "Une fenêtre ou une porte mal fermée peut empêcher le verrouillage ou l'armement de l'alarme."
+          },
+          {
+            rang: "Quelqu'un doit tout revérifier",
+            texte: "Le responsable doit alors refaire le tour des accès et des locaux pour trouver ce qui a été oublié."
+          },
+          {
+            rang: "On perd du temps et de l'énergie",
+            texte: "Une lumière laissée allumée, une ouverture oubliée ou une porte mal refermée compliquent la fermeture et fragilisent la sécurité."
+          }
+        ]
+      },
+
+      {
+        cle: "bon",
+        etiquette: "Le bon réflexe",
+        phrase: "Je pars ? Je ferme, j'éteins, je {vérifie}.",
+        image: "",
+        cadrage: "50%",
+        alt: "En fin de journée, un employé quitte un bureau après avoir fermé la fenêtre et posé son doigt sur l'interrupteur pour éteindre",
+        idees: [
+          {
+            rang: "Remettre en état",
+            texte: "Quand je n'ai plus besoin d'un local ou d'un équipement, je referme, j'éteins ou je remets en ordre avant de partir."
+          },
+          {
+            rang: "Faire un rapide check",
+            texte: "Avant la débauche, surtout le soir, un rapide coup d'œil sur les portes, fenêtres et lumières évite bien des oublis."
+          },
+          {
+            rang: "Aider sans accuser",
+            texte: "Pas besoin de chercher qui a fait quoi : si je vois un oubli, je le corrige. C'est aussi ça, travailler ensemble."
+          }
+        ]
+      }
+    ]
   }
 
 ];
