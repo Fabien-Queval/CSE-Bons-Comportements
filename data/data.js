@@ -280,6 +280,86 @@ const COMPORTEMENTS = [
         ]
       }
     ]
+  },
+
+  {
+    id: "portail-accueil",
+    famille: "Accès",
+    titre: "J'ai ouvert le portail",
+    accroche: "Il trouvera bien tout seul...",
+    vignette: "assets/img/comportements/apercu-portail.webp",
+
+    faces: [
+
+      {
+        cle: "geste",
+        etiquette: "Comment commencent les ennuis",
+        phrase: "Ouvrir le portail, c'est déjà {accueillir}.",
+        image: "assets/img/comportements/portail-ouvert-sans-accueil.webp",
+        cadrage: "50%",
+        alt: "Un employé au téléphone appuie machinalement sur le bouton d'ouverture pendant qu'au fond le portail s'ouvre sur un livreur qui entre seul",
+        idees: [
+          {
+            rang: "On ne fait pas qu'ouvrir une porte",
+            texte: "Derrière le portail, un visiteur peut accéder aux zones de livraison et aux réserves."
+          },
+          {
+            rang: "Quelqu'un doit être prêt",
+            texte: "Avant d'ouvrir, on vérifie qu'une personne peut aller l'accueillir rapidement."
+          },
+          {
+            rang: "Sinon, on se déplace soi-même",
+            texte: "Si personne n'est disponible, la personne qui ouvre prend en charge l'accueil."
+          }
+        ]
+      },
+
+      {
+        cle: "consequences",
+        etiquette: "Ce que ça coûte",
+        phrase: "Sans accueil, l'accès devient {libre}.",
+        image: "assets/img/comportements/portail-visiteur-seul.webp",
+        cadrage: "45%",
+        alt: "Un visiteur seul au milieu de l'arrière-boutique, hésitant entre plusieurs directions, pendant qu'au loin des employés travaillent sans l'avoir vu",
+        idees: [
+          {
+            rang: "Le visiteur ne sait pas où aller",
+            texte: "Il peut chercher quelqu'un et entrer dans des zones où il n'a rien à faire."
+          },
+          {
+            rang: "Les réserves restent accessibles",
+            texte: "Un entrepôt ouvert permet de circuler au milieu du matériel, des marchandises et des zones de travail."
+          },
+          {
+            rang: "On perd le contrôle de l'accès",
+            texte: "Tant qu'il n'est pas pris en charge, personne ne sait exactement où se trouve le visiteur."
+          }
+        ]
+      },
+
+      {
+        cle: "bon",
+        etiquette: "Le bon réflexe",
+        phrase: "J'ouvre quand quelqu'un est prêt à {accueillir}.",
+        image: "assets/img/comportements/portail-accueil-registre.webp",
+        cadrage: "50%",
+        alt: "Le portail vient de s'ouvrir, un employé accueille le visiteur registre en main et lui tend un stylo avant de l'accompagner",
+        idees: [
+          {
+            rang: "Je m'assure qu'on l'attend",
+            texte: "Avant d'ouvrir, je vérifie qu'un collègue peut prendre le relais immédiatement."
+          },
+          {
+            rang: "Je l'accompagne",
+            texte: "Le visiteur reste avec un salarié pendant son passage dans les zones internes."
+          },
+          {
+            rang: "Je fais signer le registre",
+            texte: "L'accueil se termine correctement : identification, registre, puis accompagnement jusqu'à la sortie ou la zone prévue."
+          }
+        ]
+      }
+    ]
   }
 
 ];
