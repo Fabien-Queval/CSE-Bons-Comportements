@@ -458,11 +458,15 @@
   /* Au clavier : espace, entrée, flèche droite. Sans ça, la fiche est
      inutilisable pour qui n'utilise pas de souris. */
   document.addEventListener("keydown", function (evenement) {
+    /* Echap d'abord : il n'appartient a aucun bouton, et il doit marcher
+       meme quand l'un d'eux garde le focus apres un clic. Le garde
+       ci-dessous le rendait muet des qu'on avait touche Accueil,
+       Recommencer ou Theme. */
+    if (evenement.key === "Escape") { retourAccueil(); return; }
+
     /* Un bouton ou une carte qui a le focus gere lui-meme espace et
        entree : on ne lui coupe pas l'herbe sous le pied. */
     if (document.activeElement && document.activeElement.closest(".bouton, .carte")) { return; }
-
-    if (evenement.key === "Escape") { retourAccueil(); return; }
 
     if (evenement.key === " " || evenement.key === "Enter" || evenement.key === "ArrowRight") {
       evenement.preventDefault();

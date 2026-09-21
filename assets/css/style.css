@@ -4,8 +4,10 @@
    2. FACE      — un écran complet : image, titre, idées
    3. IMAGE     — la bande panoramique et son fondu
    4. IDÉES     — les colonnes du bas
-   5. PETITS ÉCRANS
    6. EFFETS    — ambiance, morph, grain, parallaxe, invite, thème
+   7. ACCUEIL   — la grille de cartes
+   8. HAUTEUR   — paliers selon la hauteur d'écran
+   9. PETITS ÉCRANS (largeur) — DOIT RESTER EN DERNIER
    <===============================================================> */
 
 
@@ -338,7 +340,13 @@ body {
   font-weight: var(--gras-titre);
   text-transform: uppercase;
   letter-spacing: 0.08em;
+
+  /* Le rang tient sur une ligne, c'est voulu : c'est ce qui lui donne son
+     rythme scande. Mais s'il est trop long, autant que ca se VOIE — sans
+     ellipsis il etait coupe net, sans que rien ne signale le manque.
+     Limite pratique mesuree : environ 35 caracteres. */
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* Seule l'idée isolée est bridée en largeur : un texte étalé sur
@@ -351,34 +359,7 @@ body {
 }
 
 
-/* <========================= PETITS ÉCRANS =========================> */
 
-/* Sous 860px les colonnes n'ont plus de sens : on empile, et la page
-   redevient une page qui défile. */
-@media (max-width: 860px) {
-  body { height: auto; overflow: auto; }
-  .scene { height: auto; }
-
-  .face {
-    position: static;
-    padding-top: calc(var(--espace-12) * 2);
-  }
-
-  .face__cadre {
-    position: relative;
-    inset: auto;
-    height: auto;
-    width: 100%;
-    max-width: 100%;
-    margin: var(--espace-6) 0;
-  }
-
-  .accueil { position: static; padding-top: calc(var(--espace-12) * 2); }
-  .accueil__grille { overflow: visible; }
-
-  .idees { flex-direction: column; height: auto; margin-top: var(--espace-6); }
-  .idee.vue { padding-right: 0; padding-bottom: var(--espace-6); }
-}
 
 
 /* <===================== RÉGLAGE D'ACCESSIBILITÉ ====================> */
@@ -878,3 +859,41 @@ body.morph .face__image { animation-play-state: paused; }
 /* Utile des que le cadre est plafonne : les colonnes restent en bas au
    lieu de suivre l'image et de laisser un vide sous elles. */
 .idees { margin-top: auto; }
+
+
+/* <====================== 9. PETITS ÉCRANS (largeur) ======================>
+   Sous 860px les colonnes n'ont plus de sens : on empile, et la page
+   redevient une page qui défile.
+
+   CE BLOC DOIT RESTER LE DERNIER DU FICHIER. Une media query n'ajoute
+   aucune specificite : `.accueil` ici et `.accueil` en section 7 pesent
+   exactement pareil, et c'est donc le DERNIER ECRIT qui gagne. Tant que
+   ce bloc etait declare avant la section 7, son `position: static`
+   n'arrivait jamais jusqu'a l'accueil, qui restait en absolu sur un
+   telephone pendant que le body passait en hauteur automatique.
+   <=======================================================================> */
+
+@media (max-width: 860px) {
+  body { height: auto; overflow: auto; }
+  .scene { height: auto; }
+
+  .face {
+    position: static;
+    padding-top: calc(var(--espace-12) * 2);
+  }
+
+  .face__cadre {
+    position: relative;
+    inset: auto;
+    height: auto;
+    width: 100%;
+    max-width: 100%;
+    margin: var(--espace-6) 0;
+  }
+
+  .accueil { position: static; padding-top: calc(var(--espace-12) * 2); }
+  .accueil__grille { overflow: visible; }
+
+  .idees { flex-direction: column; height: auto; margin-top: var(--espace-6); }
+  .idee.vue { padding-right: 0; padding-bottom: var(--espace-6); }
+}
