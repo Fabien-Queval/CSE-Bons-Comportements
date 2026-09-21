@@ -251,8 +251,8 @@ const COMPORTEMENTS = [
             texte: "Le responsable doit alors refaire le tour des accès et des locaux pour trouver ce qui a été oublié."
           },
           {
-            rang: "On perd du temps et de l'énergie",
-            texte: "Une lumière laissée allumée, une ouverture oubliée ou une porte mal refermée compliquent la fermeture et fragilisent la sécurité."
+            rang: "Le magasin reste ouvert",
+            texte: "Une seule fenêtre oubliée suffit à rendre le magasin accessible toute la nuit, sans que rien ne se déclenche."
           }
         ]
       },
