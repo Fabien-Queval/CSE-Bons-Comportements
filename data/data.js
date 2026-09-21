@@ -55,7 +55,8 @@ const COMPORTEMENTS = [
         cle: "geste",
         etiquette: "Comment commencent les ennuis",
         phrase: "Les accidents en réserve {arrivent}.",
-        image: "assets/img/comportements/rack-percute.jpg",
+        image: "assets/img/comportements/rack-percute.webp",
+        cadrage: "50%",
         alt: "Un gerbeur a heurté le montant d'un rack de réserve, le montant est tordu",
         idees: [
           {
@@ -77,7 +78,8 @@ const COMPORTEMENTS = [
         cle: "consequences",
         etiquette: "Ce que ça coûte",
         phrase: "Un montant plié {ne porte plus} ce qu'il portait.",
-        image: "assets/img/comportements/rack-consequences.jpg",
+        image: "assets/img/comportements/rack-consequences.webp",
+        cadrage: "50%",
         alt: "Un rack fragilisé cède et déverse ses palettes",
         idees: [
           {
@@ -99,7 +101,8 @@ const COMPORTEMENTS = [
         cle: "bon",
         etiquette: "Le bon réflexe",
         phrase: "Parlez-en à un {responsable} !",
-        image: "assets/img/comportements/rack-bon.jpg",
+        image: "assets/img/comportements/rack-bon.webp",
+        cadrage: "50%",
         alt: "Un employé explique à son responsable qu'il a tapé un montant par mégarde",
         idees: [
           {
@@ -212,7 +215,7 @@ const COMPORTEMENTS = [
         cle: "geste",
         etiquette: "Comment commencent les ennuis",
         phrase: "Ouvrir ou allumer, c'est la moitié du {geste}.",
-        image: "",
+        image: "assets/img/comportements/oubli-bureau-allume.webp",
         cadrage: "50%",
         alt: "Un employé passe devant un bureau resté allumé avec une fenêtre ouverte",
         idees: [
@@ -235,7 +238,7 @@ const COMPORTEMENTS = [
         cle: "consequences",
         etiquette: "Ce que ça coûte",
         phrase: "Le soir, un oubli peut laisser une vraie {faille}.",
-        image: "",
+        image: "assets/img/comportements/oubli-nuit-ouverte.webp",
         cadrage: "50%",
         alt: "Le magasin de nuit avec une fenêtre ouverte, des lumières restées allumées et des silhouettes de voleurs sur le toit",
         idees: [
@@ -258,7 +261,7 @@ const COMPORTEMENTS = [
         cle: "bon",
         etiquette: "Le bon réflexe",
         phrase: "Je pars ? Je ferme, j'éteins, je {vérifie}.",
-        image: "",
+        image: "assets/img/comportements/oubli-interrupteur.webp",
         cadrage: "50%",
         alt: "En fin de journée, un employé quitte un bureau après avoir fermé la fenêtre et posé son doigt sur l'interrupteur pour éteindre",
         idees: [
